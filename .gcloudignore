@@ -6,6 +6,3 @@
 
 # Always exclude git metadata
 .git/
-
-# Devcontainer metadata
-.devcontainer/

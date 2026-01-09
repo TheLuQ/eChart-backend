@@ -23,4 +23,3 @@ func CloudEventFunc(ctx context.Context, e event.Event) error {
 	println("File in bucket:" + sth.Bucket + " of name: " + sth.Name + "was created")
 	return nil
 }
-

@@ -27,9 +27,9 @@ func MongoHandler(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprintln(w, "Connected to MongoDB!")
 
-	result, err := client.Database("test-collection")
-	.Collection("pipi")
-	.InsertOne(context.Background(), bson.M{"hello": "world", "number": 42})
+	result, err := client.Database("test-collection").
+		Collection("pipi").
+		InsertOne(context.Background(), bson.M{"hello": "world", "number": 42})
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error inserting document: %v", err), http.StatusInternalServerError)
 		return
