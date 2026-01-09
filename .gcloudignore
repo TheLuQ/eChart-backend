@@ -1,0 +1,11 @@
+# Files to ignore when uploading sources with `gcloud` (e.g., `gcloud builds submit`).
+# This does NOT affect what Terraform applies.
+
+# Reuse gitignore rules
+#!include:.gitignore
+
+# Always exclude git metadata
+.git/
+
+# Devcontainer metadata
+.devcontainer/

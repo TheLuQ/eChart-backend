@@ -1,0 +1,88 @@
+steps:
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    args:
+      - gcloud
+      - services
+      - enable
+      - cloudresourcemanager.googleapis.com
+      - eventarc.googleapis.com
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    args:
+      - gcloud
+      - beta
+      - services
+      - identity
+      - create
+      - --service=eventarc.googleapis.com
+      - --project=$PROJECT_ID
+
+  # Create GCS bucket for Terraform state
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    args:
+      - gcloud
+      - storage
+      - buckets
+      - create
+      - gs://${PROJECT_ID}-tfstate
+      - --location=europe-central2
+
+  # Initialize Terraform (uses the GCS backend created above)
+  - name: hashicorp/terraform:light
+    args:
+      - init
+      - -backend-config=bucket=$PROJECT_ID-tfstate
+
+  # Plan Terraform changes
+  - name: hashicorp/terraform:light
+    id: plan
+    args:
+      - plan
+      - -var=PROJECT_ID=$PROJECT_ID
+
+  # Apply Terraform changes (waits for 'plan')
+  - name: hashicorp/terraform:light
+    id: apply
+    waitFor:
+      - plan
+    args:
+      - apply
+      - -auto-approve
+      - -var=PROJECT_ID=$PROJECT_ID
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    dir: ./cloud-functions/storage
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - my-function
+      - --gen2
+      - --region=europe-central2
+      - --entry-point=CloudEventFunc
+      - --trigger-resource=$PROJECT_ID-source-mock-bucket
+      - --trigger-event=google.storage.object.finalize
+      - --runtime=go125
+      - --source=.
+  
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    dir: ./cloud-functions/firestore
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - mongo-function
+      - --gen2
+      - --runtime=go125
+      - --region=europe-central2
+      - --source=.
+      - --entry-point=MongoHandler
+      - --trigger-http
+      - --allow-unauthenticated
+      - --update-secrets=MONGO_CONNECTION_STRING=firestore-connector:1
+options:
+  logging: CLOUD_LOGGING_ONLY

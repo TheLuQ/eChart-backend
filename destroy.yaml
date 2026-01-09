@@ -1,0 +1,26 @@
+steps:
+  # Initialize Terraform (uses the GCS backend created above)
+  - name: hashicorp/terraform:light
+    args:
+      - init
+      - -backend-config=bucket=$PROJECT_ID-tfstate
+
+  # Plan Terraform changes
+  - name: hashicorp/terraform:light
+    id: plan
+    args:
+      - plan
+      - -var=PROJECT_ID=$PROJECT_ID
+
+  # Apply Terraform changes (waits for 'plan')
+  - name: hashicorp/terraform:light
+    id: apply
+    waitFor:
+      - plan
+    args:
+      - destroy
+      - -auto-approve
+      - -var=PROJECT_ID=$PROJECT_ID
+
+options:
+  logging: CLOUD_LOGGING_ONLY
