@@ -14,7 +14,7 @@ var dbConnector firestore.InterfaceFirestoreDB
 
 func init() {
 	var initError error
-	dbConnector, initError = firestore.New("test-collection", "pupu")
+	dbConnector, initError = firestore.New("(default)", "pupu")
 	if initError != nil {
 		println("Error initializing Firestore DB connector: " + initError.Error())
 	}
@@ -26,12 +26,13 @@ func CloudEventFunc(ctx context.Context, e event.Event) error {
 	if err := json.Unmarshal(e.Data(), &sth); err != nil {
 		println("Error unmarshaling data: " + err.Error())
 	}
-	sheet, err := firestore.NewSheet(sth.Name)
+	sheet, err := firestore.ToSheet(sth.Name)
 	if err != nil {
 		println("Error creating sheet from path: " + err.Error())
 		return err
 	}
-	err = dbConnector.SaveSheet(sheet)
+
+	err = dbConnector.UpdateSheetGroup(sheet.Id, firestore.Sheet{Instrument: sheet.Instrument, Id: sth.Name}, sheet.Title)
 	if err != nil {
 		println("Error saving sheet to database: " + err.Error())
 		return err
