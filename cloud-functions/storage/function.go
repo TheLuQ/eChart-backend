@@ -2,15 +2,22 @@ package function
 
 import (
 	"context"
-
 	"encoding/json"
 
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/TheLuQ/eChart-backend/firestore"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/googleapis/google-cloudevents-go/cloud/storagedata"
 )
 
+var dbConnector firestore.InterfaceFirestoreDB
+
 func init() {
+	var initError error
+	dbConnector, initError = firestore.New("test-collection", "pupu")
+	if initError != nil {
+		println("Error initializing Firestore DB connector: " + initError.Error())
+	}
 	functions.CloudEvent("CloudEventFunc", CloudEventFunc)
 }
 
@@ -19,7 +26,15 @@ func CloudEventFunc(ctx context.Context, e event.Event) error {
 	if err := json.Unmarshal(e.Data(), &sth); err != nil {
 		println("Error unmarshaling data: " + err.Error())
 	}
-
-	println("File in bucket:" + sth.Bucket + " of name: " + sth.Name + "was created")
+	sheet, err := firestore.NewSheet(sth.Name)
+	if err != nil {
+		println("Error creating sheet from path: " + err.Error())
+		return err
+	}
+	err = dbConnector.SaveSheet(sheet)
+	if err != nil {
+		println("Error saving sheet to database: " + err.Error())
+		return err
+	}
 	return nil
 }

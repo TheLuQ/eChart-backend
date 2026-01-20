@@ -52,8 +52,6 @@ steps:
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     dir: ./cloud-functions/storage
-    waitFor:
-      - apply
     args:
       - gcloud
       - functions
@@ -66,23 +64,7 @@ steps:
       - --trigger-event=google.storage.object.finalize
       - --runtime=go125
       - --source=.
-  
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions/firestore
-    waitFor:
-      - apply
-    args:
-      - gcloud
-      - functions
-      - deploy
-      - mongo-function
-      - --gen2
-      - --runtime=go125
-      - --region=europe-central2
-      - --source=.
-      - --entry-point=MongoHandler
-      - --trigger-http
-      - --allow-unauthenticated
-      - --update-secrets=MONGO_CONNECTION_STRING=firestore-connector:1
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID
+
 options:
   logging: CLOUD_LOGGING_ONLY
