@@ -10,19 +10,20 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/TheLuQ/eChart-backend/sheet"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type Sheet struct {
-	Instrument string `firestore:"instrument"`
-	Id         string `firestore:"id"`
+	sheet.Instrument
+	Id string `firestore:"id"`
 }
 
 type SheetInfo struct {
-	Id         string
-	Title      string
-	Instrument string
+	sheet.Instrument
+	Id    string
+	Title string
 }
 
 func ToSheet(rawPath string) (*SheetInfo, error) {
@@ -34,7 +35,11 @@ func ToSheet(rawPath string) (*SheetInfo, error) {
 	if fileName == "" || cleanParentName == "." {
 		return nil, fmt.Errorf("Invalid path format: %s", rawPath)
 	}
-	return &SheetInfo{Instrument: fileName, Id: path.Dir(rawPath), Title: cleanParentName}, nil
+	instrument, err := sheet.ParseFileName(fileName)
+	if err != nil {
+		return nil, fmt.Errorf("Invalid instrument name format: %s", fileName)
+	}
+	return &SheetInfo{Instrument: instrument, Id: path.Dir(rawPath), Title: cleanParentName}, nil
 }
 
 type SheetGroup struct {

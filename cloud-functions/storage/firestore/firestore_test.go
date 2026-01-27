@@ -3,13 +3,13 @@ package firestore
 import (
 	"fmt"
 	"testing"
+
+	"github.com/TheLuQ/eChart-backend/sheet"
 )
 
 func TestSaveSheet(t *testing.T) {
 	var sdb2 InterfaceFirestoreDB = &mock{}
-	sheet := Sheet{
-		Instrument: "Piano",
-	}
+	sheet := Sheet{Instrument: sheet.Instrument{Name: "Piano"}}
 	err := sdb2.SaveSheet(sheet)
 	if err != nil {
 		t.Errorf("Expected no error but got %v", err)
@@ -23,7 +23,7 @@ func TestNewSheet(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error but got %v", err)
 		}
-		if sheet.Instrument != "guitar" {
+		if sheet.Instrument.Name != "guitar" {
 			t.Errorf("Expected instrument 'guitar' but got %s", sheet.Instrument)
 		}
 		if sheet.Title != "my song" {
@@ -40,7 +40,7 @@ func TestNewSheet(t *testing.T) {
 		if err != nil {
 			t.Errorf("Expected no error but got %v", err)
 		}
-		if sheet.Instrument != "clarinet" {
+		if sheet.Instrument.Name != "clarinet" {
 			t.Errorf("Expected instrument 'clarinet' but got %s", sheet.Instrument)
 		}
 		if sheet.Title != "another song" {
@@ -61,8 +61,8 @@ func TestNewSheetInvalidPath(t *testing.T) {
 }
 
 func TestAddSheet(t *testing.T) {
-	sheet1 := Sheet{Instrument: "Piano"}
-	sheet2 := Sheet{Instrument: "Guitar"}
+	sheet1 := Sheet{Instrument: sheet.Instrument{Name: "Piano"}}
+	sheet2 := Sheet{Instrument: sheet.Instrument{Name: "Guitar"}}
 
 	t.Run("adds sheet when absent", func(t *testing.T) {
 		group := &SheetGroup{"My Group", "2026-01-15", []Sheet{}}
@@ -94,8 +94,9 @@ func TestAddSheet(t *testing.T) {
 }
 
 func TestUpdateTitle(t *testing.T) {
+	sheet := Sheet{Instrument: sheet.Instrument{Name: "Piano"}}
 	t.Run("does nothing when title is empty", func(t *testing.T) {
-		group := &SheetGroup{"Original", "old", []Sheet{{Instrument: "Piano"}}}
+		group := &SheetGroup{"Original", "old", []Sheet{sheet}}
 
 		group.UpdateTitle("")
 
@@ -108,7 +109,7 @@ func TestUpdateTitle(t *testing.T) {
 	})
 
 	t.Run("does nothing when title is unchanged", func(t *testing.T) {
-		group := &SheetGroup{"Same", "old", []Sheet{{Instrument: "Piano"}}}
+		group := &SheetGroup{"Same", "old", []Sheet{sheet}}
 
 		group.UpdateTitle("Same")
 
@@ -129,12 +130,12 @@ func (m *mock) SaveSheet(sheet Sheet) error {
 }
 
 func (m *mock) SearchGroupById(id string) (*SheetGroup, error) {
+	sheet := Sheet{Instrument: sheet.Instrument{Name: "Piano"}}
 	group := &SheetGroup{
 		Title:       "Sample Group",
 		LastUpdated: "2024-01-01",
 		Sheets: []Sheet{
-			{Instrument: "Piano"},
-			{Instrument: "Guitar"},
+			sheet,
 		},
 	}
 	fmt.Printf("Found group with ID %s\n", id)
