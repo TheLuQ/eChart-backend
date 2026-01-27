@@ -15,7 +15,7 @@ func main() {
 	}
 
 	println("Starting serving cloud event...")
-	if err = c.StartReceiver(context.Background(), function.CloudEventFunc); err != nil {
+	if err = c.StartReceiver(context.Background(), function.AddEvent); err != nil {
 		panic("Failed to start receiver " + err.Error())
 	}
 

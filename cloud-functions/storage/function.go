@@ -18,10 +18,39 @@ func init() {
 	if initError != nil {
 		println("Error initializing Firestore DB connector: " + initError.Error())
 	}
-	functions.CloudEvent("CloudEventFunc", CloudEventFunc)
+	functions.CloudEvent("AddEvent", AddEvent)
+	functions.CloudEvent("RemoveEvent", RemoveEvent)
 }
 
-func CloudEventFunc(ctx context.Context, e event.Event) error {
+func AddEvent(ctx context.Context, e event.Event) error {
+	sheet, err := parseEvent(e)
+	if err != nil {
+		return err
+	}
+
+	err = dbConnector.AddSheetToGroup(sheet.ParentPath, firestore.Sheet{Instrument: sheet.Instrument, Id: sheet.FullPath}, sheet.Title)
+	if err != nil {
+		println("Error saving sheet to database: " + err.Error())
+		return err
+	}
+	return nil
+}
+
+func RemoveEvent(ctx context.Context, e event.Event) error {
+	sheet, err := parseEvent(e)
+	if err != nil {
+		return err
+	}
+
+	err = dbConnector.RemoveSheetFromGroup(sheet.ParentPath, firestore.Sheet{Instrument: sheet.Instrument, Id: sheet.FullPath}, sheet.Title)
+	if err != nil {
+		println("Error saving sheet to database: " + err.Error())
+		return err
+	}
+	return nil
+}
+
+func parseEvent(e event.Event) (*firestore.SheetInfo, error) {
 	var sth storagedata.StorageObjectData
 	if err := json.Unmarshal(e.Data(), &sth); err != nil {
 		println("Error unmarshaling data: " + err.Error())
@@ -29,13 +58,7 @@ func CloudEventFunc(ctx context.Context, e event.Event) error {
 	sheet, err := firestore.ToSheet(sth.Name)
 	if err != nil {
 		println("Error creating sheet from path: " + err.Error())
-		return err
+		return nil, err
 	}
-
-	err = dbConnector.UpdateSheetGroup(sheet.Id, firestore.Sheet{Instrument: sheet.Instrument, Id: sth.Name}, sheet.Title)
-	if err != nil {
-		println("Error saving sheet to database: " + err.Error())
-		return err
-	}
-	return nil
+	return sheet, nil
 }

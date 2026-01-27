@@ -1,4 +1,4 @@
-package sheet
+package instrument
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ type Instrument struct {
 }
 
 func ParseFileName(name string) (Instrument, error) {
-	filePattern := regexp.MustCompile(`(?i)^\s*([a-z]+(?:\s+[a-z]+)*)\s*([1-9]\d*)?(?:\s+in\s+([a-z]{1,2}))?\s*$`)
+	filePattern := regexp.MustCompile(`(?i)^\s*([a-z]+(?:\s+[a-z]+){0,1})\s*([1-9]\d*)?(?:\s+in\s+([a-z]{1,2}))?\s*$`)
 
 	instrument := filePattern.FindStringSubmatch(name)
 	if instrument == nil || len(instrument) < 4 {

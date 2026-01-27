@@ -5,25 +5,23 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"slices"
 	"strings"
 	"time"
 
 	"cloud.google.com/go/firestore"
-	"github.com/TheLuQ/eChart-backend/sheet"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"github.com/TheLuQ/eChart-backend/instrument"
 )
 
 type Sheet struct {
-	sheet.Instrument
+	instrument.Instrument
 	Id string `firestore:"id"`
 }
 
 type SheetInfo struct {
-	sheet.Instrument
-	Id    string
-	Title string
+	instrument.Instrument
+	ParentPath string
+	FullPath   string
+	Title      string
 }
 
 func ToSheet(rawPath string) (*SheetInfo, error) {
@@ -35,11 +33,11 @@ func ToSheet(rawPath string) (*SheetInfo, error) {
 	if fileName == "" || cleanParentName == "." {
 		return nil, fmt.Errorf("Invalid path format: %s", rawPath)
 	}
-	instrument, err := sheet.ParseFileName(fileName)
+	instrument, err := instrument.ParseFileName(fileName)
 	if err != nil {
 		return nil, fmt.Errorf("Invalid instrument name format: %s", fileName)
 	}
-	return &SheetInfo{Instrument: instrument, Id: path.Dir(rawPath), Title: cleanParentName}, nil
+	return &SheetInfo{Instrument: instrument, ParentPath: path.Dir(rawPath), FullPath: rawPath, Title: cleanParentName}, nil
 }
 
 type SheetGroup struct {
@@ -56,26 +54,11 @@ func NewSheetGroup(title string, sheet Sheet) *SheetGroup {
 	}
 }
 
-func (sh *SheetGroup) AddSheet(sheet Sheet) {
-	if slices.Contains(sh.Sheets, sheet) {
-		return
-	}
-	sh.Sheets = append(sh.Sheets, sheet)
-	sh.LastUpdated = time.Now().Local().String()
-}
-
-func (sh *SheetGroup) UpdateTitle(title string) {
-	if title == "" || sh.Title == title {
-		return
-	}
-	sh.Title = title
-	sh.LastUpdated = time.Now().Local().String()
-}
-
 type InterfaceFirestoreDB interface {
 	SaveSheet(sheet Sheet) error
 	SearchGroupById(id string) (*SheetGroup, error)
-	UpdateSheetGroup(id string, sheet Sheet, title string) error
+	AddSheetToGroup(id string, sheet Sheet, title string) error
+	RemoveSheetFromGroup(id string, sheet Sheet, title string) error
 }
 
 type SheetDb struct {
@@ -105,25 +88,18 @@ func (s *SheetDb) SearchGroupById(id string) (*SheetGroup, error) {
 	return &group, nil
 }
 
-func (s *SheetDb) UpdateSheetGroup(id string, sheet Sheet, title string) error {
-	docRef := s.client.Collection(s.sheetCollectionName).Doc(id)
-	return s.client.RunTransaction(context.Background(), func(ctx context.Context, t *firestore.Transaction) error {
-		doc, err := t.Get(docRef)
-		if err != nil {
-			if status.Code(err) == codes.NotFound {
-				return t.Set(docRef, NewSheetGroup(title, sheet))
-			}
-			return err
-		}
+func (s *SheetDb) AddSheetToGroup(id string, sheet Sheet, title string) error {
+	return s.UpdateSheetGroup(id, sheet, title, firestore.ArrayUnion(sheet))
+}
 
-		var group SheetGroup
-		if err = doc.DataTo(&group); err != nil {
-			return err
-		}
-		group.AddSheet(sheet)
-		group.UpdateTitle(title)
-		return t.Set(docRef, group)
-	})
+func (s *SheetDb) RemoveSheetFromGroup(id string, sheet Sheet, title string) error {
+	return s.UpdateSheetGroup(id, sheet, title, firestore.ArrayRemove(sheet))
+}
+
+func (s *SheetDb) UpdateSheetGroup(id string, sheet Sheet, title string, arrayResult interface{}) error {
+	_, err := s.client.Collection(s.sheetCollectionName).Doc(id).
+		Set(context.Background(), map[string]interface{}{"instruments": arrayResult, "title": title}, firestore.MergeAll)
+	return err
 }
 
 func New(dbName string, sheetCollectionName string) (*SheetDb, error) {

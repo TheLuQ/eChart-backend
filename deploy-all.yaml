@@ -52,16 +52,37 @@ steps:
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
     dir: ./cloud-functions/storage
+    waitFor:
+      - apply
     args:
       - gcloud
       - functions
       - deploy
-      - my-function
+      - my-function-add
       - --gen2
       - --region=europe-central2
-      - --entry-point=CloudEventFunc
+      - --entry-point=AddEvent
       - --trigger-resource=$PROJECT_ID-source-mock-bucket
-      - --trigger-event=google.storage.object.finalize
+      - --trigger-event=google.cloud.storage.object.v1.finalized
+      - --runtime=go125
+      - --source=.
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID
+
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    dir: ./cloud-functions/storage
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - my-function-remove
+      - --gen2
+      - --region=europe-central2
+      - --entry-point=RemoveEvent
+      - --trigger-resource=$PROJECT_ID-source-mock-bucket
+      - --trigger-event=google.cloud.storage.object.v1.deleted
       - --runtime=go125
       - --source=.
       - --set-env-vars=PROJECT_ID=$PROJECT_ID

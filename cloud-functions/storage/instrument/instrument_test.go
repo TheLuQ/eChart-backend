@@ -1,4 +1,4 @@
-package sheet
+package instrument
 
 import "testing"
 
@@ -72,6 +72,14 @@ func TestParsingFileName(t *testing.T) {
 					Name:   "Clarinet",
 					Number: "2",
 					Key:    "B",
+				},
+			},
+			{
+				name:  "two part instrument with key",
+				input: "clarinet bas in Bb",
+				expected: Instrument{
+					Name: "clarinet bas",
+					Key:  "Bb",
 				},
 			},
 			{
