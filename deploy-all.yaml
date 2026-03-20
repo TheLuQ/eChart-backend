@@ -64,9 +64,13 @@ steps:
       - --entry-point=AddEvent
       - --trigger-resource=$PROJECT_ID-source-mock-bucket
       - --trigger-event=google.cloud.storage.object.v1.finalized
+      - --concurrency=1
+      - --cpu=.08
+      - --memory=128Mi
+      - --max-instances=1
       - --runtime=go125
       - --source=.
-      - --set-env-vars=PROJECT_ID=$PROJECT_ID
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
 
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
@@ -83,9 +87,33 @@ steps:
       - --entry-point=RemoveEvent
       - --trigger-resource=$PROJECT_ID-source-mock-bucket
       - --trigger-event=google.cloud.storage.object.v1.deleted
+      - --max-instances=1
+      - --memory=128Mi
       - --runtime=go125
       - --source=.
-      - --set-env-vars=PROJECT_ID=$PROJECT_ID
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    dir: ./cloud-functions/storage
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - my-function-metadata-update
+      - --gen2
+      - --region=europe-central2
+      - --entry-point=MetadataUpdateEvent
+      - --trigger-resource=$PROJECT_ID-source-mock-bucket
+      - --trigger-event=google.cloud.storage.object.v1.metadataUpdated
+      - --runtime=go125
+      - --concurrency=1
+      - --cpu=.08
+      - --memory=128Mi
+      - --max-instances=1
+      - --source=.
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
 
 options:
   logging: CLOUD_LOGGING_ONLY
