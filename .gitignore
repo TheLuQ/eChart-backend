@@ -3,6 +3,7 @@
 *.tfstate
 *.tfstate.*
 *.tfplan
+*.tf
 crash.log
 crash.*.log
 
@@ -15,6 +16,7 @@ crash.*.log
 .env.*
 *.pem
 *.key
+**/.npmrc
 
 # Editors / OS
 .vscode/

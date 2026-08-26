@@ -51,7 +51,7 @@ steps:
       - -var=PROJECT_ID=$PROJECT_ID
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions/storage
+    dir: ./cloud-functions
     waitFor:
       - apply
     args:
@@ -70,11 +70,12 @@ steps:
       - --max-instances=1
       - --runtime=go125
       - --source=.
-      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
+      - --update-labels=version=${_TAG_NAME}
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
 
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions/storage
+    dir: ./cloud-functions
     waitFor:
       - apply
     args:
@@ -91,10 +92,10 @@ steps:
       - --memory=128Mi
       - --runtime=go125
       - --source=.
-      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions/storage
+    dir: ./cloud-functions
     waitFor:
       - apply
     args:
@@ -113,7 +114,39 @@ steps:
       - --memory=128Mi
       - --max-instances=1
       - --source=.
-      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: build-api
+    dir: ./cloud-functions
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - builds
+      - submit
+      - --config=api/cloudbuild.yaml
+      - --region=europe-central2
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    dir: ./cloud-functions
+    waitFor:
+      - build-api
+    args:
+      - gcloud
+      - run
+      - deploy
+      - my-function-api
+      - --region=europe-central2
+      - --allow-unauthenticated
+      - --base-image=go125
+      - --concurrency=1
+      - --cpu=.08
+      - --memory=128Mi
+      - --max-instances=1
+      - --no-deploy-health-check
+      - --image=europe-central2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/my-function-api:latest
+      - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,EVENTS_COLLECTION=events,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
 
 options:
   logging: CLOUD_LOGGING_ONLY

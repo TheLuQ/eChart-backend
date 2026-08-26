@@ -2,12 +2,13 @@ package firestore
 
 import (
 	"encoding/json"
+	"os"
 	"testing"
 )
 
 func TestToSheet(t *testing.T) {
 	t.Run("with complete metadata", func(t *testing.T) {
-		rawPath := "music/sheets/my-song"
+		rawPath := "my-band/sheets/my-song"
 		metadata := map[string]string{
 			"instrument_name_en":  "guitar",
 			"instrument_name_pol": "gitara",
@@ -20,11 +21,18 @@ func TestToSheet(t *testing.T) {
 			t.Fatalf("Expected no error but got %v", err)
 		}
 
-		if sheet.Id != rawPath {
-			t.Errorf("Expected sheet id %q but got %q", rawPath, sheet.Id)
+		expectedID := "my-band/sheets/my-song"
+		if sheet.Id != expectedID {
+			t.Errorf("Expected sheet id %q but got %q", expectedID, sheet.Id)
 		}
 		if sheet.FileName != "my-song" {
 			t.Errorf("Expected file name 'my-song' but got %s", sheet.FileName)
+		}
+		if sheet.Title != "sheets" {
+			t.Errorf("Expected title 'sheets' but got %s", sheet.Title)
+		}
+		if sheet.Band != "my-band" {
+			t.Errorf("Expected band 'my-band' but got %s", sheet.Band)
 		}
 		if sheet.Instrument.Name != "guitar" {
 			t.Errorf("Expected instrument name 'guitar' but got %s", sheet.Instrument.Name)
@@ -41,11 +49,17 @@ func TestToSheet(t *testing.T) {
 	})
 
 	t.Run("with missing metadata keys", func(t *testing.T) {
-		rawPath := "music/sheets/another-song"
+		rawPath := "my-band/sheets/another-song"
 
 		sheet, err := ToSheet(rawPath, map[string]string{})
 		if err != nil {
 			t.Fatalf("Expected no error but got %v", err)
+		}
+		if sheet.Id != "my-band/sheets/another-song" {
+			t.Errorf("Expected object name id but got %s", sheet.Id)
+		}
+		if sheet.Band != "my-band" {
+			t.Errorf("Expected parsed band but got %s", sheet.Band)
 		}
 		if sheet.Instrument.Name != "" {
 			t.Errorf("Expected empty instrument name but got %s", sheet.Instrument.Name)
@@ -73,6 +87,7 @@ func TestSheetMarshalJSON(t *testing.T) {
 		Id:       "sheet-123",
 		Title:    "my song",
 		FileName: "asd.pdf",
+		Url:      "https://storage.googleapis.com/my-bucket/music/sheets/my-song",
 	}
 
 	data, err := json.Marshal(sheet)
@@ -93,6 +108,7 @@ func TestSheetMarshalJSON(t *testing.T) {
 		"title":               "my song",
 		"file_name":           "asd.pdf",
 		"voice":               "1",
+		"url":                 "https://storage.googleapis.com/my-bucket/music/sheets/my-song",
 	}
 	for key, want := range checks {
 		got, ok := result[key]
@@ -103,6 +119,82 @@ func TestSheetMarshalJSON(t *testing.T) {
 		if got != want {
 			t.Errorf("Expected JSON[%q] = %q but got %q", key, want, got)
 		}
+	}
+}
+
+func TestGetSheets(t *testing.T) {
+	t.Setenv(sheetStorageBaseURLEnv, "https://storage.googleapis.com")
+	t.Setenv(sheetStorageBucketEnv, "my-bucket")
+
+	sg := &SheetGroup{
+		Title: "group title",
+		Band:  "my-band",
+		Sheets: []Sheet{
+			{Id: "my-band/sheets/my-song"},
+			{},
+		},
+	}
+
+	result := sg.GetSheets()
+	if len(result) != 2 {
+		t.Fatalf("Expected 2 sheets but got %d", len(result))
+	}
+	if result[0].Title != "group title" {
+		t.Fatalf("Expected title to be propagated but got %q", result[0].Title)
+	}
+	if result[0].Band != "my-band" {
+		t.Fatalf("Expected band to be propagated but got %q", result[0].Band)
+	}
+	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band/sheets/my-song" {
+		t.Fatalf("Expected generated url but got %q", result[0].Url)
+	}
+	if result[1].Url != "" {
+		t.Fatalf("Expected empty url for empty id but got %q", result[1].Url)
+	}
+}
+
+func TestGetSheetsWithoutBaseURL(t *testing.T) {
+	if err := os.Unsetenv(sheetStorageBaseURLEnv); err != nil {
+		t.Fatalf("failed to unset env: %v", err)
+	}
+	t.Setenv(sheetStorageBucketEnv, "my-bucket")
+
+	sg := &SheetGroup{
+		Title: "group title",
+		Sheets: []Sheet{
+			{Id: "my-band/sheets/my-song"},
+		},
+	}
+
+	result := sg.GetSheets()
+	if len(result) != 1 {
+		t.Fatalf("Expected 1 sheet but got %d", len(result))
+	}
+	if result[0].Url != "" {
+		t.Fatalf("Expected empty url when %s is not set but got %q", sheetStorageBaseURLEnv, result[0].Url)
+	}
+}
+
+func TestGroupKey(t *testing.T) {
+	cases := []struct {
+		name  string
+		band  string
+		title string
+		want  string
+	}{
+		{name: "normal values", band: "Frank Sinatra Orchestra", title: "Fly Me to the Moon", want: "frank-sinatra-orchestra__fly-me-to-the-moon"},
+		{name: "collapses spaces and symbols", band: "  Big   Band ", title: "Fly  me --- to   the moon", want: "big-band__fly-me-to-the-moon"},
+		{name: "empty title", band: "Only Band", title: "", want: "only-band"},
+		{name: "empty band", band: "", title: "Only Title", want: "only-title"},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := GroupKey(tc.band, tc.title)
+			if got != tc.want {
+				t.Fatalf("Expected group key %q but got %q", tc.want, got)
+			}
+		})
 	}
 }
 

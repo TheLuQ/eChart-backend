@@ -1,0 +1,19 @@
+FROM google/cloud-sdk:latest
+
+WORKDIR /app
+COPY ./docker/firestore/firestore.db.json   /app/
+COPY ./docker/firestore/firestore.events.db.json   /app/
+
+ENV PROJECT_ID=fake-project
+ENV DB=sheets
+
+CMD gcloud emulators firestore start --host-port=0.0.0.0:8080 & \
+    until curl -sf http://localhost:8080; do sleep 1; done && \
+    curl -X PATCH -H "Content-Type: application/json" \
+    -d @firestore.db.json \
+    "http://localhost:8080/v1/projects/${PROJECT_ID}/databases/(default)/documents/${DB}/CJpiIJQU634R3ovcCEBg" && \
+    curl -X POST -H "Content-Type: application/json" \
+    -H "Authorization: Bearer owner" \
+    -d @firestore.events.db.json \
+    "http://localhost:8080/v1/projects/${PROJECT_ID}/databases/(default)/documents:batchWrite" && \
+    wait

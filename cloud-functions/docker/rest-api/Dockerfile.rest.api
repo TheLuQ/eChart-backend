@@ -1,0 +1,41 @@
+ARG GO_BASE_IMAGE=golang:1.26.1-bullseye
+ARG NODE_BASE_IMAGE=node:20
+
+FROM $GO_BASE_IMAGE AS builder
+
+WORKDIR /app
+
+COPY go.mod go.sum /app/
+ARG GOPROXY=${GOPROXY:-https://proxy.golang.org,direct}
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./api/main.go
+
+FROM alpine:3.21 AS production
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+
+WORKDIR /app
+
+COPY --from=builder /app/server .
+
+USER appuser
+
+EXPOSE 8080
+
+CMD ["./server"]
+
+FROM $NODE_BASE_IMAGE AS mockapi
+
+WORKDIR /app
+
+COPY .npmrc* /root
+
+ARG NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS}
+RUN npm install -g json-server@0.17.4
+
+COPY ./docker/rest-api/db.json .
+COPY ./docker/rest-api/routes.json .
+
+CMD ["json-server", "--watch", "db.json", "--port", "8080", "--routes", "routes.json", "--host", "0.0.0.0"]

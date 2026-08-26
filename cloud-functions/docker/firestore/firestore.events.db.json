@@ -1,0 +1,375 @@
+{
+    "writes": [
+        {
+            "update": {
+                "name": "projects/fake-project/databases/(default)/documents/events/evt-rock-night-2026-09-05",
+                "fields": {
+                    "title": {
+                        "stringValue": "Rock Night Opening"
+                    },
+                    "date": {
+                        "stringValue": "2026-09-05"
+                    },
+                    "time": {
+                        "stringValue": "18:30"
+                    },
+                    "description": {
+                        "stringValue": "Season opening concert with mixed brass and woodwind repertoire."
+                    },
+                    "location": {
+                        "stringValue": "City Culture Hall"
+                    },
+                    "agenda": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "18:30"
+                                            },
+                                            "title": {
+                                                "stringValue": "Doors Open"
+                                            },
+                                            "description": {
+                                                "stringValue": "Audience check-in and seating."
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "19:00"
+                                            },
+                                            "title": {
+                                                "stringValue": "Concert Part I"
+                                            },
+                                            "description": {
+                                                "stringValue": "Opening pieces and solo feature."
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "titles": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "Symphonic Overture"
+                                },
+                                {
+                                    "stringValue": "Mountain Echoes"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "concert"
+                                },
+                                {
+                                    "stringValue": "opening"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "update": {
+                "name": "projects/fake-project/databases/(default)/documents/events/evt-community-day-2026-09-12",
+                "fields": {
+                    "title": {
+                        "stringValue": "Community Music Day"
+                    },
+                    "date": {
+                        "stringValue": "2026-09-12"
+                    },
+                    "time": {
+                        "stringValue": "11:00"
+                    },
+                    "description": {
+                        "stringValue": "Outdoor community performance and instrument demos."
+                    },
+                    "location": {
+                        "stringValue": "Central Park Stage"
+                    },
+                    "agenda": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "11:00"
+                                            },
+                                            "title": {
+                                                "stringValue": "Warm-up Session"
+                                            },
+                                            "description": {
+                                                "stringValue": "Quick group rehearsal before performance."
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "12:00"
+                                            },
+                                            "title": {
+                                                "stringValue": "Open Workshop"
+                                            },
+                                            "description": {
+                                                "stringValue": "Families can try selected instruments."
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "titles": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "Festival March"
+                                },
+                                {
+                                    "stringValue": "Bright Morning"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "outdoor"
+                                },
+                                {
+                                    "stringValue": "community"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "update": {
+                "name": "projects/fake-project/databases/(default)/documents/events/evt-autumn-session-2026-10-01",
+                "fields": {
+                    "title": {
+                        "stringValue": "Autumn Rehearsal Session"
+                    },
+                    "date": {
+                        "stringValue": "2026-10-01"
+                    },
+                    "description": {
+                        "stringValue": "Section-focused rehearsal before fall events."
+                    },
+                    "location": {
+                        "stringValue": "Music School Room 3"
+                    },
+                    "titles": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "Evening Prelude"
+                                },
+                                {
+                                    "stringValue": "Northern Wind"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "rehearsal"
+                                },
+                                {
+                                    "stringValue": "indoor"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "update": {
+                "name": "projects/fake-project/databases/(default)/documents/events/evt-winter-gala-2026-12-18",
+                "fields": {
+                    "title": {
+                        "stringValue": "Winter Gala"
+                    },
+                    "date": {
+                        "stringValue": "2026-12-18"
+                    },
+                    "time": {
+                        "stringValue": "19:30"
+                    },
+                    "description": {
+                        "stringValue": "Formal evening concert featuring guest musicians."
+                    },
+                    "location": {
+                        "stringValue": "Grand Theater"
+                    },
+                    "agenda": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "19:30"
+                                            },
+                                            "title": {
+                                                "stringValue": "Opening Speech"
+                                            },
+                                            "description": {
+                                                "stringValue": "Welcome and sponsor acknowledgements."
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "19:45"
+                                            },
+                                            "title": {
+                                                "stringValue": "Main Program"
+                                            },
+                                            "description": {
+                                                "stringValue": "Two-part concert with intermission."
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "titles": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "Snowfall Suite"
+                                },
+                                {
+                                    "stringValue": "Midnight Bells"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "gala"
+                                },
+                                {
+                                    "stringValue": "formal"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        {
+            "update": {
+                "name": "projects/fake-project/databases/(default)/documents/events/evt-new-year-kickoff-2027-01-10",
+                "fields": {
+                    "title": {
+                        "stringValue": "New Year Kickoff"
+                    },
+                    "date": {
+                        "stringValue": "2027-01-10"
+                    },
+                    "time": {
+                        "stringValue": "17:00"
+                    },
+                    "description": {
+                        "stringValue": "First meeting of the year with planning and short set."
+                    },
+                    "location": {
+                        "stringValue": "Band HQ"
+                    },
+                    "agenda": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "17:00"
+                                            },
+                                            "title": {
+                                                "stringValue": "Season Planning"
+                                            },
+                                            "description": {
+                                                "stringValue": "Review goals and event calendar."
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "mapValue": {
+                                        "fields": {
+                                            "time": {
+                                                "stringValue": "18:00"
+                                            },
+                                            "title": {
+                                                "stringValue": "Mini Performance"
+                                            },
+                                            "description": {
+                                                "stringValue": "Short preview set for invited guests."
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "titles": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "New Dawn"
+                                },
+                                {
+                                    "stringValue": "City Lights"
+                                }
+                            ]
+                        }
+                    },
+                    "tags": {
+                        "arrayValue": {
+                            "values": [
+                                {
+                                    "stringValue": "planning"
+                                },
+                                {
+                                    "stringValue": "kickoff"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    ]
+}

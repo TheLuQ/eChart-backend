@@ -1,0 +1,66 @@
+{
+    "fields": {
+        "band": {
+            "stringValue": "SOAD"
+        },
+        "title": {
+            "stringValue": "Steal this album"
+        },
+        "group_key": {
+            "stringValue": "soad__steal-this-album"
+        },
+        "last_updated": {
+            "stringValue": "2026-08-24 15:19:39.108399673 +0000 UTC"
+        },
+        "sheets": {
+            "arrayValue": {
+                "values": [
+                    {
+                        "mapValue": {
+                            "fields": {
+                                "instrument_name_en": {
+                                    "stringValue": "horn"
+                                },
+                                "instrument_name_pol": {
+                                    "stringValue": "waltornia"
+                                },
+                                "key": {
+                                    "stringValue": "F"
+                                },
+                                "object_name": {
+                                    "stringValue": "SOAD/Steal this album/horn-F.pdf"
+                                },
+                                "file_name": {
+                                    "stringValue": "horn-F.pdf"
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "mapValue": {
+                            "fields": {
+                                "instrument_name_en": {
+                                    "stringValue": "clarinet"
+                                },
+                                "instrument_name_pol": {
+                                    "stringValue": "klarnet"
+                                },
+                                "voice": {
+                                    "stringValue": "1"
+                                },
+                                "object_name": {
+                                    "stringValue": "SOAD/Steal this album/clarinet-1.pdf"
+                                },
+                                "file_name": {
+                                    "stringValue": "clarinet-1.pdf"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        }
+    },
+    "createTime": "2026-08-24T15:18:40.764341Z",
+    "updateTime": "2026-08-24T15:19:39.133171Z"
+}

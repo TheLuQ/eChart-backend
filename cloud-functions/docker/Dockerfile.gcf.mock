@@ -1,0 +1,18 @@
+ARG GO_BASE_IMAGE=golang:1.26.1-bullseye
+FROM $GO_BASE_IMAGE AS builder
+
+WORKDIR /app
+COPY go.mod go.sum /app/
+
+ARG GOPROXY=${GOPROXY:-https://proxy.golang.org,direct}
+RUN GOPROXY=${GOPROXY} go mod download
+
+COPY . /app/
+RUN go build -o micro-service ./cmd
+
+FROM alpine:3.18
+
+COPY --from=builder /app/micro-service /app/micro-service
+WORKDIR /app
+
+ENTRYPOINT ["./micro-service"]
