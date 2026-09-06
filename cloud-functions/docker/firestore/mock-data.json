@@ -1,0 +1,140 @@
+{
+    "sheets": [
+        {
+            "instrument_name_en": "bassoon",
+            "instrument_name_pol": "fagot",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/fg1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fg1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "fg1.pdf"
+        },
+        {
+            "instrument_name_en": "flute",
+            "instrument_name_pol": "flet",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/fl1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fl1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "fl1.pdf"
+        },
+        {
+            "instrument_name_en": "trumpet",
+            "instrument_name_pol": "trabka",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/tr1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/tr1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "tr1.pdf"
+        },
+        {
+            "instrument_name_en": "flute",
+            "instrument_name_pol": "flet",
+            "file_id": "GOS/Funiculi Funicula/Flet.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Flet.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Flet.pdf"
+        },
+        {
+            "instrument_name_en": "clarinet",
+            "instrument_name_pol": "klarnet",
+            "voice": "1",
+            "key": "B",
+            "file_id": "GOS/Funiculi Funicula/Klarnet 1 in B.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Klarnet%201%20in%20B.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Klarnet 1 in B.pdf"
+        },
+        {
+            "instrument_name_en": "horn",
+            "instrument_name_pol": "waltornia",
+            "voice": "1",
+            "key": "F",
+            "file_id": "GOS/Funiculi Funicula/Waltornia 1 in F.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Waltornia%201%20in%20F.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Waltornia 1 in F.pdf"
+        },
+        {
+            "instrument_name_en": "violin",
+            "instrument_name_pol": "skrzypce",
+            "voice": "1",
+            "file_id": "GOS/Suita/Violin1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Violin1.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Violin1.pdf"
+        },
+        {
+            "instrument_name_en": "trumpet",
+            "instrument_name_pol": "trumpet",
+            "voice": "1",
+            "key": "Bb",
+            "file_id": "GOS/Suita/Bb_Trumpet_1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Bb_Trumpet_1.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Bb_Trumpet_1.pdf"
+        },
+        {
+            "instrument_name_en": "bass",
+            "instrument_name_pol": "kontrabas",
+            "file_id": "GOS/Suita/Bass.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Bass.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Bass.pdf"
+        }
+    ],
+    "events": [
+        {
+            "id": "evt-gos-ui-check-2026-09-10",
+            "title": "GOS UI Check Rehearsal",
+            "date": "2026-09-10",
+            "time": "19:00",
+            "description": "Simple mock event for UI list and details testing.",
+            "location": "GOS Test Hall",
+            "agenda": [
+                {
+                    "time": "19:00",
+                    "title": "Warmup",
+                    "description": "Short section warmup."
+                },
+                {
+                    "time": "19:30",
+                    "title": "Run-through",
+                    "description": "Play selected pieces once."
+                }
+            ],
+            "titles": [
+                "Carmen - Habanera",
+                "Suita"
+            ],
+            "tags": [
+                "mock",
+                "ui-test"
+            ]
+        },
+        {
+            "id": "evt-gos-ui-check-2026-09-17",
+            "title": "GOS UI Check Concert",
+            "date": "2026-09-17",
+            "time": "18:30",
+            "description": "Second mock event to validate multi-event rendering.",
+            "location": "City Stage",
+            "titles": [
+                "Funiculi Funicula"
+            ],
+            "tags": [
+                "mock",
+                "concert"
+            ]
+        }
+    ]
+}

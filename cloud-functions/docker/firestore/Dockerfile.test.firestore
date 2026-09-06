@@ -1,19 +1,26 @@
+ARG GO_BASE_IMAGE=golang:1.26.1-bullseye
+FROM ${GO_BASE_IMAGE} AS go-base
+
+WORKDIR /app
+COPY go.mod go.sum /app/
+ARG GOPROXY=${GOPROXY:-https://proxy.golang.org,direct}
+RUN go mod download
+
+COPY . .
+
+RUN go build -o dbseed ./cmd/dbseed
+
 FROM google/cloud-sdk:latest
 
 WORKDIR /app
-COPY ./docker/firestore/firestore.db.json   /app/
-COPY ./docker/firestore/firestore.events.db.json   /app/
+COPY ./docker/firestore/mock-data.json .
+COPY --from=go-base /app/dbseed /app/
 
 ENV PROJECT_ID=fake-project
 ENV DB=sheets
+ENV MOCK_DATA_FILE=/app/mock-data.json
 
 CMD gcloud emulators firestore start --host-port=0.0.0.0:8080 & \
     until curl -sf http://localhost:8080; do sleep 1; done && \
-    curl -X PATCH -H "Content-Type: application/json" \
-    -d @firestore.db.json \
-    "http://localhost:8080/v1/projects/${PROJECT_ID}/databases/(default)/documents/${DB}/CJpiIJQU634R3ovcCEBg" && \
-    curl -X POST -H "Content-Type: application/json" \
-    -H "Authorization: Bearer owner" \
-    -d @firestore.events.db.json \
-    "http://localhost:8080/v1/projects/${PROJECT_ID}/databases/(default)/documents:batchWrite" && \
+    ./dbseed && \
     wait

@@ -59,7 +59,26 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 		w.Write(titleJson)
 	})
 
-	r.Route("/sheets", func(r chi.Router) {
+	r.Route("/api/sheets", func(r chi.Router) {
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			options, err := ParseEventOptions(r.URL.Query())
+			if err != nil {
+				http.Error(w, "Invalid query params: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+			result, err := sheets.SearchByIds(options.IDs)
+			if err != nil {
+				http.Error(w, "Failed to retrieve sheets: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			sheetJson, err := json.Marshal(result)
+			if err != nil {
+				http.Error(w, "Failed to marshal sheets: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			w.Write(sheetJson)
+		})
 		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
 			id := chi.URLParam(r, "id")
 			result, err := sheets.SearchByIds([]string{id})
