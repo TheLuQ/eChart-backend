@@ -112,9 +112,9 @@
                     "description": "Play selected pieces once."
                 }
             ],
-            "titles": [
-                "Carmen - Habanera",
-                "Suita"
+            "group_keys": [
+                "gos__carmen-habanera",
+                "gos__suita"
             ],
             "tags": [
                 "mock",
@@ -128,8 +128,20 @@
             "time": "18:30",
             "description": "Second mock event to validate multi-event rendering.",
             "location": "City Stage",
-            "titles": [
-                "Funiculi Funicula"
+            "agenda": [
+                {
+                    "time": "18:30",
+                    "title": "Doors Open",
+                    "description": "Audience check-in and seating."
+                },
+                {
+                    "time": "19:00",
+                    "title": "Concert Part I",
+                    "description": "Opening pieces and solo feature."
+                }
+            ],
+            "group_keys": [
+                "gos__funiculi-funicula"
             ],
             "tags": [
                 "mock",

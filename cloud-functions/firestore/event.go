@@ -26,7 +26,7 @@ type Event struct {
 	Description string       `json:"description" firestore:"description"`
 	Location    string       `json:"location"    firestore:"location"`
 	Agenda      []AgendaItem `json:"agenda"      firestore:"agenda,omitempty"`
-	Titles      []string     `json:"titles"      firestore:"titles,omitempty"`
+	GroupKeys   []string     `json:"group_keys"  firestore:"group_keys,omitempty"`
 	Tags        []string     `json:"tags"        firestore:"tags,omitempty"`
 }
 
@@ -43,7 +43,7 @@ func ShortEventQuery() DocQuery {
 			firestore.FieldPath{"date"},
 			firestore.FieldPath{"location"},
 			firestore.FieldPath{"description"},
-			firestore.FieldPath{"titles"},
+			firestore.FieldPath{"group_keys"},
 			firestore.FieldPath{"id"},
 		)
 	}

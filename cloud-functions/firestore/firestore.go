@@ -18,6 +18,12 @@ func GroupKeyQuery(groupKey string) DocQuery {
 	}
 }
 
+func GroupKeysQuery(groupKeys []string) DocQuery {
+	return func(collection *firestore.CollectionRef) firestore.Query {
+		return collection.Where("group_key", "in", groupKeys)
+	}
+}
+
 func IdQuery(ids []string) DocQuery {
 	return func(cr *firestore.CollectionRef) firestore.Query {
 		var refs []*firestore.DocumentRef

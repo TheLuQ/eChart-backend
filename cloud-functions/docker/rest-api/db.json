@@ -135,9 +135,9 @@
                     "description": "Play selected pieces once."
                 }
             ],
-            "titles": [
-                "Carmen - Habanera",
-                "Suita"
+            "group_keys": [
+                "gos__carmen-habanera",
+                "gos__suita"
             ],
             "tags": [
                 "mock",
@@ -151,8 +151,8 @@
             "time": "18:30",
             "description": "Second mock event to validate multi-event rendering.",
             "location": "City Stage",
-            "titles": [
-                "Funiculi Funicula"
+            "group_keys": [
+                "gos__funiculi-funicula"
             ],
             "tags": [
                 "mock",

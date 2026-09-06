@@ -54,3 +54,17 @@ func TestParseEventOptions(t *testing.T) {
 		}
 	})
 }
+
+func TestParseSheetOptions(t *testing.T) {
+	t.Run("returns repeated non-empty group keys", func(t *testing.T) {
+		values := url.Values{}
+		values.Add("group_key", "gos__carmen-habanera")
+		values.Add("group_key", "")
+		values.Add("group_key", "gos__suita")
+
+		got := ParseSheetOptions(values)
+		if !reflect.DeepEqual(got.GroupKeys, []string{"gos__carmen-habanera", "gos__suita"}) {
+			t.Fatalf("expected group keys [gos__carmen-habanera gos__suita] but got %v", got.GroupKeys)
+		}
+	})
+}

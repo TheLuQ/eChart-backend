@@ -18,6 +18,10 @@ type EventOptions struct {
 	StartAfterID string
 }
 
+type SheetOptions struct {
+	GroupKeys []string
+}
+
 func ParseEventOptions(values url.Values) (EventOptions, error) {
 	ids := nonEmpty(values["id"])
 	if len(ids) > 0 {
@@ -38,6 +42,10 @@ func ParseEventOptions(values url.Values) (EventOptions, error) {
 		Limit:        limit,
 		StartAfterID: values.Get("startAfterId"),
 	}, nil
+}
+
+func ParseSheetOptions(values url.Values) SheetOptions {
+	return SheetOptions{GroupKeys: nonEmpty(values["group_key"])}
 }
 
 func nonEmpty(values []string) []string {

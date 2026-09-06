@@ -46,8 +46,11 @@ type SheetConnector struct {
 	CollectionName string
 }
 
-func (c *SheetConnector) SearchByIds(ids []string) ([]Sheet, error) {
-	docs, err := c.Db.SearchByQuery(c.CollectionName, IdQuery(ids))
+func (c *SheetConnector) SearchByGroupKeys(groupKeys []string) ([]Sheet, error) {
+	if len(groupKeys) == 0 {
+		return []Sheet{}, nil
+	}
+	docs, err := c.Db.SearchByQuery(c.CollectionName, GroupKeysQuery(groupKeys))
 	if err != nil {
 		return nil, err
 	}

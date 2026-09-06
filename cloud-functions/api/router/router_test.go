@@ -12,11 +12,13 @@ import (
 
 type mockSheetStore struct{}
 
-func (m *mockSheetStore) GetAllTitles() ([]firestore.SheetGroup, error)       { return nil, nil }
-func (m *mockSheetStore) SearchByIds(ids []string) ([]firestore.Sheet, error) { return nil, nil }
-func (m *mockSheetStore) AddSheet(sheet *firestore.Sheet) error               { return nil }
-func (m *mockSheetStore) UpsertSheet(sheet *firestore.Sheet) error            { return nil }
-func (m *mockSheetStore) RemoveSheet(sheet *firestore.Sheet) error            { return nil }
+func (m *mockSheetStore) GetAllTitles() ([]firestore.SheetGroup, error) { return nil, nil }
+func (m *mockSheetStore) SearchByGroupKeys(groupKeys []string) ([]firestore.Sheet, error) {
+	return nil, nil
+}
+func (m *mockSheetStore) AddSheet(sheet *firestore.Sheet) error    { return nil }
+func (m *mockSheetStore) UpsertSheet(sheet *firestore.Sheet) error { return nil }
+func (m *mockSheetStore) RemoveSheet(sheet *firestore.Sheet) error { return nil }
 
 type mockEventStore struct {
 	detailsCalls    int

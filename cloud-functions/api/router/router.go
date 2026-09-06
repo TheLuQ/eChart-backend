@@ -27,7 +27,11 @@ func corsMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-type QueryRequest struct {
+type SheetQueryRequest struct {
+	GroupKeys []string `json:"group_keys"`
+}
+
+type EventQueryRequest struct {
 	IDs []string `json:"ids"`
 }
 
@@ -61,12 +65,8 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 
 	r.Route("/api/sheets", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			options, err := ParseEventOptions(r.URL.Query())
-			if err != nil {
-				http.Error(w, "Invalid query params: "+err.Error(), http.StatusBadRequest)
-				return
-			}
-			result, err := sheets.SearchByIds(options.IDs)
+			options := ParseSheetOptions(r.URL.Query())
+			result, err := sheets.SearchByGroupKeys(options.GroupKeys)
 			if err != nil {
 				http.Error(w, "Failed to retrieve sheets: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -79,9 +79,9 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 			w.Header().Set("Content-Type", "application/json")
 			w.Write(sheetJson)
 		})
-		r.Get("/{id}", func(w http.ResponseWriter, r *http.Request) {
-			id := chi.URLParam(r, "id")
-			result, err := sheets.SearchByIds([]string{id})
+		r.Get("/{groupKey}", func(w http.ResponseWriter, r *http.Request) {
+			groupKey := chi.URLParam(r, "groupKey")
+			result, err := sheets.SearchByGroupKeys([]string{groupKey})
 			if err != nil {
 				http.Error(w, "Failed to retrieve sheet: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -99,12 +99,12 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 			w.Write(sheetJson)
 		})
 		r.Post("/query", func(w http.ResponseWriter, r *http.Request) {
-			var query QueryRequest
+			var query SheetQueryRequest
 			if err := json.NewDecoder(r.Body).Decode(&query); err != nil {
 				http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 				return
 			}
-			result, err := sheets.SearchByIds(query.IDs)
+			result, err := sheets.SearchByGroupKeys(query.GroupKeys)
 			if err != nil {
 				http.Error(w, "Failed to search sheets: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -146,7 +146,7 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 			w.Write(eventJson)
 		})
 		r.Post("/query", func(w http.ResponseWriter, r *http.Request) {
-			var query QueryRequest
+			var query EventQueryRequest
 			if err := json.NewDecoder(r.Body).Decode(&query); err != nil {
 				http.Error(w, "Invalid request body: "+err.Error(), http.StatusBadRequest)
 				return
