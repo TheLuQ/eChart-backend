@@ -102,7 +102,18 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 
 	r.Route("/api/events", func(r chi.Router) {
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			result, err := events.GetShortEvents()
+			options, err := ParseEventOptions(r.URL.Query())
+			if err != nil {
+				http.Error(w, "Invalid query params: "+err.Error(), http.StatusBadRequest)
+				return
+			}
+
+			var result []firestore.Event
+			if len(options.IDs) > 0 {
+				result, err = events.GetEventDetails(options.IDs)
+			} else {
+				result, err = events.GetShortEventsWithPagination(options.StartAfterID, options.Limit)
+			}
 			if err != nil {
 				http.Error(w, "Failed to retrieve events: "+err.Error(), http.StatusInternalServerError)
 				return

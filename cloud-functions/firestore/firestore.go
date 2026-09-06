@@ -28,6 +28,27 @@ func IdQuery(ids []string) DocQuery {
 	}
 }
 
+func PaginationQuery(startAfterID string, limit int) DocQuery {
+	validatedLimit := normalizePaginationLimit(limit)
+	return func(cr *firestore.CollectionRef) firestore.Query {
+		q := cr.OrderBy(firestore.DocumentID, firestore.Asc).Limit(validatedLimit)
+		if startAfterID != "" {
+			q = q.StartAfter(startAfterID)
+		}
+		return q
+	}
+}
+
+func normalizePaginationLimit(limit int) int {
+	if limit < minPaginationLimit {
+		return defaultPaginationLimit
+	}
+	if limit > maxPaginationLimit {
+		return maxPaginationLimit
+	}
+	return limit
+}
+
 type DocUpdateFn func(transaction *firestore.Transaction, ref *firestore.DocumentRef) error
 
 type CreateDocFn func(ref *firestore.DocumentRef) (*firestore.WriteResult, error)

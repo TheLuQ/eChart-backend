@@ -1,161 +1,162 @@
 {
     "titles": [
         {
-            "id": "soad__steal-this-album",
-            "title": "Steal this album",
-            "band": "SOAD",
-            "group_key": "soad__steal-this-album",
-            "last_updated": "2026-08-24 15:19:39.108399673 +0000 UTC"
+            "id": "gos__carmen-habanera",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "group_key": "gos__carmen-habanera",
+            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
+        },
+        {
+            "id": "gos__funiculi-funicula",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "group_key": "gos__funiculi-funicula",
+            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
+        },
+        {
+            "id": "gos__suita",
+            "title": "Suita",
+            "band": "GOS",
+            "group_key": "gos__suita",
+            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
         }
     ],
-    "sheets": {
-        "soad__steal-this-album": [
-            {
-                "instrument_name_en": "horn",
-                "instrument_name_pol": "waltornia",
-                "key": "F",
-                "file_id": "SOAD/Steal this album/horn-F.pdf",
-                "title": "Steal this album",
-                "band": "SOAD",
-                "file_name": "horn-F.pdf"
-            },
-            {
-                "instrument_name_en": "clarinet",
-                "instrument_name_pol": "klarnet",
-                "voice": "1",
-                "file_id": "SOAD/Steal this album/clarinet-1.pdf",
-                "title": "Steal this album",
-                "band": "SOAD",
-                "file_name": "clarinet-1.pdf"
-            }
-        ]
-    },
+    "sheets": [
+        {
+            "instrument_name_en": "bassoon",
+            "instrument_name_pol": "fagot",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/fg1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fg1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "fg1.pdf"
+        },
+        {
+            "instrument_name_en": "flute",
+            "instrument_name_pol": "flet",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/fl1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fl1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "fl1.pdf"
+        },
+        {
+            "instrument_name_en": "trumpet",
+            "instrument_name_pol": "trabka",
+            "voice": "1",
+            "file_id": "GOS/Carmen - Habanera/tr1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/tr1.pdf",
+            "title": "Carmen - Habanera",
+            "band": "GOS",
+            "file_name": "tr1.pdf"
+        },
+        {
+            "instrument_name_en": "flute",
+            "instrument_name_pol": "flet",
+            "file_id": "GOS/Funiculi Funicula/Flet.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Flet.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Flet.pdf"
+        },
+        {
+            "instrument_name_en": "clarinet",
+            "instrument_name_pol": "klarnet",
+            "voice": "1",
+            "key": "B",
+            "file_id": "GOS/Funiculi Funicula/Klarnet 1 in B.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Klarnet%201%20in%20B.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Klarnet 1 in B.pdf"
+        },
+        {
+            "instrument_name_en": "horn",
+            "instrument_name_pol": "waltornia",
+            "voice": "1",
+            "key": "F",
+            "file_id": "GOS/Funiculi Funicula/Waltornia 1 in F.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Funiculi%20Funicula/Waltornia%201%20in%20F.pdf",
+            "title": "Funiculi Funicula",
+            "band": "GOS",
+            "file_name": "Waltornia 1 in F.pdf"
+        },
+        {
+            "instrument_name_en": "violin",
+            "instrument_name_pol": "skrzypce",
+            "voice": "1",
+            "file_id": "GOS/Suita/Violin1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Violin1.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Violin1.pdf"
+        },
+        {
+            "instrument_name_en": "trumpet",
+            "instrument_name_pol": "trumpet",
+            "voice": "1",
+            "key": "Bb",
+            "file_id": "GOS/Suita/Bb_Trumpet_1.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Bb_Trumpet_1.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Bb_Trumpet_1.pdf"
+        },
+        {
+            "instrument_name_en": "bass",
+            "instrument_name_pol": "kontrabas",
+            "file_id": "GOS/Suita/Bass.pdf",
+            "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Bass.pdf",
+            "title": "Suita",
+            "band": "GOS",
+            "file_name": "Bass.pdf"
+        }
+    ],
     "events": [
         {
-            "id": "evt-rock-night-2026-09-05",
-            "title": "Rock Night Opening",
-            "date": "2026-09-05",
-            "time": "18:30",
-            "description": "Season opening concert with mixed brass and woodwind repertoire.",
-            "location": "City Culture Hall",
+            "id": "evt-gos-ui-check-2026-09-10",
+            "title": "GOS UI Check Rehearsal",
+            "date": "2026-09-10",
+            "time": "19:00",
+            "description": "Simple mock event for UI list and details testing.",
+            "location": "GOS Test Hall",
             "agenda": [
-                {
-                    "time": "18:30",
-                    "title": "Doors Open",
-                    "description": "Audience check-in and seating."
-                },
                 {
                     "time": "19:00",
-                    "title": "Concert Part I",
-                    "description": "Opening pieces and solo feature."
-                }
-            ],
-            "titles": [
-                "Symphonic Overture",
-                "Mountain Echoes"
-            ],
-            "tags": [
-                "concert",
-                "opening"
-            ]
-        },
-        {
-            "id": "evt-community-day-2026-09-12",
-            "title": "Community Music Day",
-            "date": "2026-09-12",
-            "time": "11:00",
-            "description": "Outdoor community performance and instrument demos.",
-            "location": "Central Park Stage",
-            "agenda": [
-                {
-                    "time": "11:00",
-                    "title": "Warm-up Session",
-                    "description": "Quick group rehearsal before performance."
+                    "title": "Warmup",
+                    "description": "Short section warmup."
                 },
-                {
-                    "time": "12:00",
-                    "title": "Open Workshop",
-                    "description": "Families can try selected instruments."
-                }
-            ],
-            "titles": [
-                "Festival March",
-                "Bright Morning"
-            ],
-            "tags": [
-                "outdoor",
-                "community"
-            ]
-        },
-        {
-            "id": "evt-autumn-session-2026-10-01",
-            "title": "Autumn Rehearsal Session",
-            "date": "2026-10-01",
-            "description": "Section-focused rehearsal before fall events.",
-            "location": "Music School Room 3",
-            "titles": [
-                "Evening Prelude",
-                "Northern Wind"
-            ],
-            "tags": [
-                "rehearsal",
-                "indoor"
-            ]
-        },
-        {
-            "id": "evt-winter-gala-2026-12-18",
-            "title": "Winter Gala",
-            "date": "2026-12-18",
-            "time": "19:30",
-            "description": "Formal evening concert featuring guest musicians.",
-            "location": "Grand Theater",
-            "agenda": [
                 {
                     "time": "19:30",
-                    "title": "Opening Speech",
-                    "description": "Welcome and sponsor acknowledgements."
-                },
-                {
-                    "time": "19:45",
-                    "title": "Main Program",
-                    "description": "Two-part concert with intermission."
+                    "title": "Run-through",
+                    "description": "Play selected pieces once."
                 }
             ],
             "titles": [
-                "Snowfall Suite",
-                "Midnight Bells"
+                "Carmen - Habanera",
+                "Suita"
             ],
             "tags": [
-                "gala",
-                "formal"
+                "mock",
+                "ui-test"
             ]
         },
         {
-            "id": "evt-new-year-kickoff-2027-01-10",
-            "title": "New Year Kickoff",
-            "date": "2027-01-10",
-            "time": "17:00",
-            "description": "First meeting of the year with planning and short set.",
-            "location": "Band HQ",
-            "agenda": [
-                {
-                    "time": "17:00",
-                    "title": "Season Planning",
-                    "description": "Review goals and event calendar."
-                },
-                {
-                    "time": "18:00",
-                    "title": "Mini Performance",
-                    "description": "Short preview set for invited guests."
-                }
-            ],
+            "id": "evt-gos-ui-check-2026-09-17",
+            "title": "GOS UI Check Concert",
+            "date": "2026-09-17",
+            "time": "18:30",
+            "description": "Second mock event to validate multi-event rendering.",
+            "location": "City Stage",
             "titles": [
-                "New Dawn",
-                "City Lights"
+                "Funiculi Funicula"
             ],
             "tags": [
-                "planning",
-                "kickoff"
+                "mock",
+                "concert"
             ]
         }
     ]

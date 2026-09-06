@@ -10,6 +10,6 @@ type SheetStore interface {
 
 type EventStore interface {
 	AddEvent(event *Event) error
-	GetShortEvents() ([]Event, error)
+	GetShortEventsWithPagination(startAfterID string, limit int) ([]Event, error)
 	GetEventDetails(ids []string) ([]Event, error)
 }
