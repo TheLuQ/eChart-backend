@@ -51,7 +51,7 @@ steps:
       - -var=PROJECT_ID=$PROJECT_ID
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions
+    dir: .
     waitFor:
       - apply
     args:
@@ -68,14 +68,14 @@ steps:
       - --cpu=.08
       - --memory=128Mi
       - --max-instances=1
-      - --runtime=go125
+      - --runtime=go126
       - --source=.
       - --update-labels=version=${_TAG_NAME}
       - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
 
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions
+    dir: .
     waitFor:
       - apply
     args:
@@ -90,7 +90,7 @@ steps:
       - --trigger-event=google.cloud.storage.object.v1.deleted
       - --max-instances=1
       - --memory=128Mi
-      - --runtime=go125
+      - --runtime=go126
       - --source=.
       - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
 
@@ -115,11 +115,24 @@ steps:
       - gcloud
       - builds
       - submit
-      - --config=api/cloudbuild.yaml
+      - --config=cloudbuild-api.yaml
+      - --region=europe-central2
+
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    id: build-frontend
+    dir: ./eChart
+    waitFor:
+      - apply
+    args:
+      - gcloud
+      - builds
+      - submit
       - --region=europe-central2
 
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
-    dir: ./cloud-functions
+    dir: .
+    id: deploy-api
     waitFor:
       - build-api
     args:
@@ -129,14 +142,28 @@ steps:
       - my-function-api
       - --region=europe-central2
       - --allow-unauthenticated
-      - --base-image=go125
+      - --base-image=go126
       - --concurrency=1
       - --cpu=.08
       - --memory=128Mi
       - --max-instances=1
       - --no-deploy-health-check
-      - --image=europe-central2-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/my-function-api:latest
+      - --update-labels=version=${_TAG_NAME}
+      - --image=europe-central2-docker.pkg.dev/$PROJECT_ID/echart/my-function-api:latest
       - --set-env-vars=PROJECT_ID=$PROJECT_ID,DB=sheets,EVENTS_COLLECTION=events,SHEET_STORAGE_BUCKET=$PROJECT_ID-source-mock-bucket
+
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    waitFor:
+      - deploy-api
+    args:
+      - gcloud
+      - run
+      - deploy
+      - my-frontend
+      - --region=europe-central2
+      - --allow-unauthenticated
+      - --image=europe-central2-docker.pkg.dev/$PROJECT_ID/echart/frontend:latest
+      - --set-env-vars=API_ENDPOINT=https://my-function-api-${PROJECT_NUMBER}.europe-central2.run.app
 
 options:
   logging: CLOUD_LOGGING_ONLY

@@ -118,7 +118,7 @@ func TestGetSheets(t *testing.T) {
 	if result[0].Band != "my-band" {
 		t.Fatalf("Expected band to be propagated but got %q", result[0].Band)
 	}
-	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band/sheets/my-song" {
+	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band%2Fsheets%2Fmy-song?alt=media" {
 		t.Fatalf("Expected generated url but got %q", result[0].Url)
 	}
 	if result[1].Url != "" {
@@ -143,7 +143,7 @@ func TestGetSheetsWithoutBaseURL(t *testing.T) {
 	if len(result) != 1 {
 		t.Fatalf("Expected 1 sheet but got %d", len(result))
 	}
-	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band%2Fsheets%2Fmy-song" {
+	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band%2Fsheets%2Fmy-song?alt=media" {
 		t.Fatalf("Expected empty url when %s is not set but got %q", sheetStorageBaseURLEnv, result[0].Url)
 	}
 }

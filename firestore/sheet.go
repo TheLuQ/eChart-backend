@@ -168,7 +168,7 @@ func (sg *SheetGroup) GetSheets() []Sheet {
 		sg.Sheets[i].Title = sg.Title
 		sg.Sheets[i].Band = sg.Band
 		if sg.Sheets[i].Id != "" && bucketName != "" {
-			sg.Sheets[i].Url = baseURL + "/storage/v1/b/" + bucketName + "/o/" + url.PathEscape(sg.Sheets[i].Id)
+			sg.Sheets[i].Url = baseURL + "/storage/v1/b/" + bucketName + "/o/" + url.PathEscape(sg.Sheets[i].Id) + "?alt=media"
 		}
 	}
 	return sg.Sheets

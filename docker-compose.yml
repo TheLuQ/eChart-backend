@@ -1,7 +1,8 @@
 services:
   firestore:
     build:
-      dockerfile: ./docker/firestore/Dockerfile.test.firestore
+      context: .
+      dockerfile: Dockerfile.test.firestore
       args:
         - GO_BASE_IMAGE=${GO_BASE_IMAGE}
         - GOPROXY=${GOPROXY}
@@ -25,7 +26,8 @@ services:
 
   gcf-emulator:
     build:
-      dockerfile: ./docker/Dockerfile.gcf.mock
+      context: .
+      dockerfile: Dockerfile.gcf.mock
       args:
         - GO_BASE_IMAGE=${GO_BASE_IMAGE}
         - GOPROXY=${GOPROXY}
@@ -40,7 +42,8 @@ services:
           - ${GCF_EMULATOR_HOSTNAME}
   rest-api:
     build:
-      dockerfile: ./docker/rest-api/Dockerfile.rest.api
+      context: .
+      dockerfile: Dockerfile.rest.api
       args:
         - GO_BASE_IMAGE=${GO_BASE_IMAGE}
         - NODE_BASE_IMAGE=${NODE_BASE_IMAGE}

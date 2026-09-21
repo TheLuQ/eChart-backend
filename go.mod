@@ -8,7 +8,6 @@ require (
 	github.com/adrg/strutil v0.3.1
 	github.com/cloudevents/sdk-go/v2 v2.16.2
 	github.com/go-chi/chi/v5 v5.2.5
-	github.com/googleapis/google-cloudevents-go v0.10.0
 	golang.org/x/text v0.25.0
 )
 

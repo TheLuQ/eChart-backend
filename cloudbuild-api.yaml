@@ -1,0 +1,19 @@
+steps:
+  - name: gcr.io/cloud-builders/docker
+    id: build-api
+    args:
+      - build
+      - -f
+      - ./Dockerfile.rest.api
+      - --target=${_REST_API_TARGET}
+      - --tag=europe-central2-docker.pkg.dev/$PROJECT_ID/echart/my-function-api:latest
+      - .
+
+images:
+  - europe-central2-docker.pkg.dev/$PROJECT_ID/echart/my-function-api:latest
+
+substitutions:
+  _REST_API_TARGET: production
+
+options:
+  logging: CLOUD_LOGGING_ONLY

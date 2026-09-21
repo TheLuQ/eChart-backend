@@ -1,27 +1,4 @@
 {
-    "titles": [
-        {
-            "id": "gos__carmen-habanera",
-            "title": "Carmen - Habanera",
-            "band": "GOS",
-            "group_key": "gos__carmen-habanera",
-            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
-        },
-        {
-            "id": "gos__funiculi-funicula",
-            "title": "Funiculi Funicula",
-            "band": "GOS",
-            "group_key": "gos__funiculi-funicula",
-            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
-        },
-        {
-            "id": "gos__suita",
-            "title": "Suita",
-            "band": "GOS",
-            "group_key": "gos__suita",
-            "last_updated": "2026-08-27 00:00:00.000000000 +0000 UTC"
-        }
-    ],
     "sheets": [
         {
             "instrument_name_en": "bassoon",
@@ -151,6 +128,18 @@
             "time": "18:30",
             "description": "Second mock event to validate multi-event rendering.",
             "location": "City Stage",
+            "agenda": [
+                {
+                    "time": "18:30",
+                    "title": "Doors Open",
+                    "description": "Audience check-in and seating."
+                },
+                {
+                    "time": "19:00",
+                    "title": "Concert Part I",
+                    "description": "Opening pieces and solo feature."
+                }
+            ],
             "group_keys": [
                 "gos__funiculi-funicula"
             ],

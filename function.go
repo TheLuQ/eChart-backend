@@ -10,10 +10,14 @@ import (
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
 	"github.com/TheLuQ/eChart-backend/firestore"
 	"github.com/cloudevents/sdk-go/v2/event"
-	"github.com/googleapis/google-cloudevents-go/cloud/storagedata"
 )
 
 var sheetConnector *firestore.SheetConnector
+
+type EventPayload struct {
+	Bucket string `protobuf:"bytes,25,opt,name=bucket,proto3" json:"bucket,omitempty"`
+	Name   string `protobuf:"bytes,23,opt,name=name,proto3" json:"name,omitempty"`
+}
 
 func init() {
 	dbConnector, initError := firestore.New("(default)")
@@ -69,7 +73,7 @@ func RemoveEvent(ctx context.Context, e event.Event) error {
 }
 
 func parseEvent(e event.Event) (*firestore.Sheet, error) {
-	var sth storagedata.StorageObjectData
+	var sth EventPayload
 	if err := json.Unmarshal(e.Data(), &sth); err != nil {
 		println("Error unmarshaling data: " + err.Error())
 		return nil, err
