@@ -31,7 +31,7 @@
             "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fg1.pdf",
             "title": "Carmen - Habanera",
             "band": "GOS",
-            "file_name": "fg1.pdf"
+            "file_name": "fagot1.pdf"
         },
         {
             "instrument_name_en": "flute",
@@ -41,11 +41,11 @@
             "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/fl1.pdf",
             "title": "Carmen - Habanera",
             "band": "GOS",
-            "file_name": "fl1.pdf"
+            "file_name": "flet1.pdf"
         },
         {
             "instrument_name_en": "trumpet",
-            "instrument_name_pol": "trabka",
+            "instrument_name_pol": "trąbka",
             "voice": "1",
             "file_id": "GOS/Carmen - Habanera/tr1.pdf",
             "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Carmen%20-%20Habanera/tr1.pdf",
@@ -96,7 +96,7 @@
         },
         {
             "instrument_name_en": "trumpet",
-            "instrument_name_pol": "trumpet",
+            "instrument_name_pol": "trąbka",
             "voice": "1",
             "key": "Bb",
             "file_id": "GOS/Suita/Bb_Trumpet_1.pdf",
@@ -112,7 +112,7 @@
             "url": "https://storage.googleapis.com/gos-mock-sheets/GOS/Suita/Bass.pdf",
             "title": "Suita",
             "band": "GOS",
-            "file_name": "Bass.pdf"
+            "file_name": "Double Bass.pdf"
         }
     ],
     "events": [

@@ -1,6 +1,7 @@
 package firestore
 
 import (
+	"net/url"
 	"os"
 	"path"
 	"regexp"
@@ -8,10 +9,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/firestore"
+	"github.com/TheLuQ/eChart-backend/matcher"
 )
 
 const sheetStorageBaseURLEnv = "SHEET_STORAGE_BASE_URL"
 const sheetStorageBucketEnv = "SHEET_STORAGE_BUCKET"
+const DEFAULT_SHEET_STORAGE_BASE_URL = "https://storage.googleapis.com"
 
 var groupKeySeparatorRegex = regexp.MustCompile(`[^a-z0-9]+`)
 
@@ -154,19 +157,24 @@ func RemoveSheetFn(sheet *Sheet) DocUpdateFn {
 }
 
 func (sg *SheetGroup) GetSheets() []Sheet {
-	baseURL := strings.TrimRight(os.Getenv(sheetStorageBaseURLEnv), "/")
+	var baseURL string
+	if val, ok := os.LookupEnv(sheetStorageBaseURLEnv); ok {
+		baseURL = strings.TrimRight(val, "/")
+	} else {
+		baseURL = DEFAULT_SHEET_STORAGE_BASE_URL
+	}
 	bucketName := strings.TrimSpace(os.Getenv(sheetStorageBucketEnv))
 	for i := range sg.Sheets {
 		sg.Sheets[i].Title = sg.Title
 		sg.Sheets[i].Band = sg.Band
-		if sg.Sheets[i].Id != "" && baseURL != "" && bucketName != "" {
-			sg.Sheets[i].Url = baseURL + "/storage/v1/b/" + bucketName + "/o/" + sg.Sheets[i].Id
+		if sg.Sheets[i].Id != "" && bucketName != "" {
+			sg.Sheets[i].Url = baseURL + "/storage/v1/b/" + bucketName + "/o/" + url.PathEscape(sg.Sheets[i].Id)
 		}
 	}
 	return sg.Sheets
 }
 
-func ToSheet(rawPath string, metadata map[string]string) (*Sheet, error) {
+func ToSheet(rawPath, instrumentName, instrumentNamePol, voice, key string) (*Sheet, error) {
 	fileName := path.Base(rawPath)
 	title := path.Base(path.Dir(rawPath))
 	band := path.Base(path.Dir(path.Dir(rawPath)))
@@ -176,15 +184,42 @@ func ToSheet(rawPath string, metadata map[string]string) (*Sheet, error) {
 	if band == "." || band == "/" {
 		band = ""
 	}
-	instrumentName := metadata["instrument_name_en"]
-	instrumentNamePol := metadata["instrument_name_pol"]
-	voice := metadata["voice"]
-	key := metadata["key"]
+
 	id := rawPath
 
 	instrument := Instrument{
 		Name: instrumentName, NamePol: instrumentNamePol, Key: key, Voice: voice}
 	return &Sheet{Instrument: instrument, Id: id, FileName: fileName, Title: title, Band: band}, nil
+}
+
+func ToSheetWithMatcher(rawPath string) (*Sheet, error) {
+	fileName := path.Base(rawPath)
+	title := path.Base(path.Dir(rawPath))
+	band := path.Base(path.Dir(path.Dir(rawPath)))
+	if title == "." || title == "/" {
+		title = ""
+	}
+	if band == "." || band == "/" {
+		band = ""
+	}
+
+	id := rawPath
+	match, err := matcher.Analyze(fileName)
+	if err != nil {
+		return nil, err
+	}
+	return &Sheet{
+		Instrument: Instrument{
+			Name:    match.Instrument.NameEng,
+			NamePol: match.Instrument.NamePol,
+			Key:     match.Key,
+			Voice:   match.GetVoice(),
+		},
+		Id:       id,
+		FileName: fileName,
+		Title:    title,
+		Band:     band,
+	}, nil
 }
 
 func NewSheetGroup(title string, sheet Sheet) *SheetGroup {

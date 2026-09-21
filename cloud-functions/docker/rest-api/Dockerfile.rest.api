@@ -32,7 +32,6 @@ WORKDIR /app
 
 COPY .npmrc* /root
 
-ARG NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS}
 RUN npm install -g json-server@0.17.4
 
 COPY ./docker/rest-api/db.json .

@@ -44,7 +44,7 @@ func AddEvent(ctx context.Context, e event.Event) error {
 	if err != nil {
 		return err
 	}
-	println("Parsed sheet: " + sheet.Id + " with title: " + sheet.Title + " and name: " + sheet.Name)
+	println("Parsed sheet: " + sheet.Id + " with title: " + sheet.Title + " and name: " + sheet.Instrument.Name)
 
 	err = sheetConnector.AddSheet(sheet)
 	if err != nil {
@@ -78,7 +78,7 @@ func parseEvent(e event.Event) (*firestore.Sheet, error) {
 	if configuredBucket != "" && sth.Bucket != configuredBucket {
 		return nil, fmt.Errorf("ignoring object from unexpected bucket: got %q expected %q", sth.Bucket, configuredBucket)
 	}
-	sheets, err := firestore.ToSheet(sth.Name, sth.Metadata)
+	sheets, err := firestore.ToSheetWithMatcher(sth.Name)
 	if err != nil {
 		println("Error creating sheet from path: " + err.Error())
 		return nil, err

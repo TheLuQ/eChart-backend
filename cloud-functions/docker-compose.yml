@@ -45,7 +45,6 @@ services:
         - GO_BASE_IMAGE=${GO_BASE_IMAGE}
         - NODE_BASE_IMAGE=${NODE_BASE_IMAGE}
         - GOPROXY=${GOPROXY}
-        - NODE_EXTRA_CA_CERTS=${NODE_EXTRA_CA_CERTS}
       target: ${REST_API_TARGET-production}
     env_file:
       - .env

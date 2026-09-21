@@ -24,7 +24,11 @@ func main() {
 
 	mockData := getMockData(mockFilePath)
 	for _, sheet := range mockData.Sheets {
-		err := sheetConnector.AddSheet(&sheet)
+		matchedSheet, err := firestore.ToSheetWithMatcher(sheet.Id)
+		if err != nil {
+			log.Fatal("Failed to create sheet with matcher for file: " + sheet.FileName + " with error: " + err.Error())
+		}
+		err = sheetConnector.AddSheet(matchedSheet)
 		if err != nil {
 			log.Fatal("Failed to add sheet: " + err.Error())
 		} else {

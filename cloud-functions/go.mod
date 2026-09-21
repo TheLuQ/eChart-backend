@@ -5,9 +5,11 @@ go 1.23.5
 require (
 	cloud.google.com/go/firestore v1.18.0
 	github.com/GoogleCloudPlatform/functions-framework-go v1.9.2
+	github.com/adrg/strutil v0.3.1
 	github.com/cloudevents/sdk-go/v2 v2.16.2
 	github.com/go-chi/chi/v5 v5.2.5
 	github.com/googleapis/google-cloudevents-go v0.10.0
+	golang.org/x/text v0.25.0
 )
 
 require (
@@ -40,7 +42,6 @@ require (
 	golang.org/x/oauth2 v0.29.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
 	golang.org/x/time v0.12.0 // indirect
 	google.golang.org/api v0.229.0 // indirect
 	google.golang.org/genproto v0.0.0-20250603155806-513f23925822 // indirect

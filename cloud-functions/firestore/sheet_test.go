@@ -16,7 +16,7 @@ func TestToSheet(t *testing.T) {
 			"key":                 "C",
 		}
 
-		sheet, err := ToSheet(rawPath, metadata)
+		sheet, err := ToSheet(rawPath, metadata["instrument_name_en"], metadata["instrument_name_pol"], metadata["voice"], metadata["key"])
 		if err != nil {
 			t.Fatalf("Expected no error but got %v", err)
 		}
@@ -45,33 +45,6 @@ func TestToSheet(t *testing.T) {
 		}
 		if sheet.Instrument.Key != "C" {
 			t.Errorf("Expected key 'C' but got %s", sheet.Instrument.Key)
-		}
-	})
-
-	t.Run("with missing metadata keys", func(t *testing.T) {
-		rawPath := "my-band/sheets/another-song"
-
-		sheet, err := ToSheet(rawPath, map[string]string{})
-		if err != nil {
-			t.Fatalf("Expected no error but got %v", err)
-		}
-		if sheet.Id != "my-band/sheets/another-song" {
-			t.Errorf("Expected object name id but got %s", sheet.Id)
-		}
-		if sheet.Band != "my-band" {
-			t.Errorf("Expected parsed band but got %s", sheet.Band)
-		}
-		if sheet.Instrument.Name != "" {
-			t.Errorf("Expected empty instrument name but got %s", sheet.Instrument.Name)
-		}
-		if sheet.Instrument.NamePol != "" {
-			t.Errorf("Expected empty instrument polish name but got %s", sheet.Instrument.NamePol)
-		}
-		if sheet.Instrument.Voice != "" {
-			t.Errorf("Expected empty voice but got %s", sheet.Instrument.Voice)
-		}
-		if sheet.Instrument.Key != "" {
-			t.Errorf("Expected empty key but got %s", sheet.Instrument.Key)
 		}
 	})
 }
@@ -170,7 +143,7 @@ func TestGetSheetsWithoutBaseURL(t *testing.T) {
 	if len(result) != 1 {
 		t.Fatalf("Expected 1 sheet but got %d", len(result))
 	}
-	if result[0].Url != "" {
+	if result[0].Url != "https://storage.googleapis.com/storage/v1/b/my-bucket/o/my-band%2Fsheets%2Fmy-song" {
 		t.Fatalf("Expected empty url when %s is not set but got %q", sheetStorageBaseURLEnv, result[0].Url)
 	}
 }
