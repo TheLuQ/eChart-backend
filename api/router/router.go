@@ -35,6 +35,26 @@ type EventQueryRequest struct {
 	IDs []string `json:"ids"`
 }
 
+type TitleResponse struct {
+	Title       string    `json:"title"`
+	Band        string    `json:"band,omitempty"`
+	GroupKey    string    `json:"group_key,omitempty"`
+	LastUpdated time.Time `json:"last_updated"`
+}
+
+func NewTitlesResponse(sheetGroups []firestore.SheetGroup) []TitleResponse {
+	titles := make([]TitleResponse, len(sheetGroups))
+	for i, sg := range sheetGroups {
+		titles[i] = TitleResponse{
+			Title:       sg.Title,
+			Band:        sg.Band,
+			GroupKey:    sg.GroupKey,
+			LastUpdated: sg.LastUpdated,
+		}
+	}
+	return titles
+}
+
 func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Handler {
 	r := chi.NewRouter()
 
@@ -48,19 +68,29 @@ func NewRouter(sheets firestore.SheetStore, events firestore.EventStore) http.Ha
 		w.Write([]byte("I am working!"))
 	})
 
-	r.Get("/titles", func(w http.ResponseWriter, r *http.Request) {
+	r.Get("/api/titles", func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("If-None-Match") != "" {
+			etag, err := sheets.GetEtag()
+			if err != nil {
+				http.Error(w, "Failed to retrieve etag: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+			if r.Header.Get("If-None-Match") == etag {
+				w.WriteHeader(http.StatusNotModified)
+				return
+			}
+		}
 		titles, err := sheets.GetAllTitles()
 		if err != nil {
 			http.Error(w, "Failed to retrieve titles: "+err.Error(), http.StatusInternalServerError)
 			return
 		}
-		titleJson, err := json.Marshal(titles)
-		if err != nil {
-			http.Error(w, "Failed to marshal titles: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+
+		titleResponse := NewTitlesResponse(titles)
+		w.Header().Set("ETag", firestore.CalculateEtag(titles))
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(titleJson)
+		w.Header().Set("Cache-Control", "max-age=60")
+		json.NewEncoder(w).Encode(titleResponse)
 	})
 
 	r.Route("/api/sheets", func(r chi.Router) {

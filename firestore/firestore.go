@@ -6,10 +6,23 @@ import (
 	"os"
 
 	"cloud.google.com/go/firestore"
+	"cloud.google.com/go/firestore/apiv1/firestorepb"
 )
 
 type FireDb struct {
 	client *firestore.Client
+}
+
+func CountQuery() AggregationQuery {
+	return func(cr *firestore.CollectionRef) *firestore.AggregationQuery {
+		return cr.NewAggregationQuery().WithCount("count")
+	}
+}
+
+func MaxQuery(field string) DocQuery {
+	return func(collection *firestore.CollectionRef) firestore.Query {
+		return collection.OrderBy(field, firestore.Desc).Limit(1)
+	}
 }
 
 func GroupKeyQuery(groupKey string) DocQuery {
@@ -31,6 +44,12 @@ func IdQuery(ids []string) DocQuery {
 			refs = append(refs, cr.Doc(id))
 		}
 		return cr.Where(firestore.DocumentID, "in", refs)
+	}
+}
+
+func LastUpdatedQuery() DocQuery {
+	return func(collection *firestore.CollectionRef) firestore.Query {
+		return MaxQuery("last_updated")(collection)
 	}
 }
 
@@ -60,6 +79,8 @@ type DocUpdateFn func(transaction *firestore.Transaction, ref *firestore.Documen
 type CreateDocFn func(ref *firestore.DocumentRef) (*firestore.WriteResult, error)
 
 type DocQuery func(*firestore.CollectionRef) firestore.Query
+
+type AggregationQuery func(*firestore.CollectionRef) *firestore.AggregationQuery
 
 func (s *FireDb) UpdateDocumentWithGroupKey(collectionName string, groupKey string, updateFn DocUpdateFn) error {
 	return s.UpdateDocument(collectionName, updateFn, GroupKeyQuery(groupKey))
@@ -115,6 +136,59 @@ func (s *FireDb) SearchByQuery(collectionName string, query DocQuery) ([]*firest
 		return nil, err
 	}
 	return docs, nil
+}
+
+func (s *FireDb) SearchWithAggregate(collectionName string, queryFn AggregationQuery) (firestore.AggregationResult, error) {
+	collection := s.client.Collection(collectionName)
+	query := queryFn(collection)
+	result, err := query.Get(context.Background())
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (s *FireDb) CountDocuments(collectionName string) (int64, error) {
+	result, err := s.SearchWithAggregate(collectionName, CountQuery())
+	if err != nil {
+		return 0, err
+	}
+	count, ok := result["count"].(*firestorepb.Value)
+	if !ok {
+		return 0, fmt.Errorf("failed to parse count from aggregation result")
+	}
+	return count.GetIntegerValue(), nil
+}
+
+func (s *FireDb) SearchSingleDocument(collectionName string, queryFn DocQuery) (*firestore.DocumentSnapshot, error) {
+	docs, err := s.SearchByQuery(collectionName, queryFn)
+	if err != nil {
+		return nil, err
+	}
+	if len(docs) == 0 {
+		return nil, fmt.Errorf("no documents found")
+	}
+	return docs[0], nil
+}
+
+func ParseDocument[T any](doc *firestore.DocumentSnapshot) (*T, error) {
+	var result T
+	if err := doc.DataTo(&result); err != nil {
+		return nil, err
+	}
+	return &result, nil
+}
+
+func ParseDocuments[T any](docs []*firestore.DocumentSnapshot) ([]T, error) {
+	result := make([]T, 0, len(docs))
+	for _, doc := range docs {
+		parsed, err := ParseDocument[T](doc)
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, *parsed)
+	}
+	return result, nil
 }
 
 func New(dbName string) (*FireDb, error) {

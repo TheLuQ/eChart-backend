@@ -1,9 +1,12 @@
 package firestore
 
 import (
+	"crypto/sha1"
 	"encoding/json"
+	"fmt"
 	"os"
 	"testing"
+	"time"
 )
 
 func TestToSheet(t *testing.T) {
@@ -199,6 +202,33 @@ func TestSheetGroupAddSheetIfMissing(t *testing.T) {
 		sg.AddSheetIfMissing(&Sheet{Id: "first"})
 		if len(sg.Sheets) != 1 {
 			t.Fatalf("Expected 1 sheet but got %d", len(sg.Sheets))
+		}
+	})
+}
+
+func TestCalculateEtag(t *testing.T) {
+	t.Run("empty slice hashes empty input", func(t *testing.T) {
+		want := fmt.Sprintf("%x", sha1.Sum(nil))
+		if got := CalculateEtag(nil); got != want {
+			t.Fatalf("CalculateEtag(nil) = %q, want %q", got, want)
+		}
+		if got := CalculateEtag([]SheetGroup{}); got != want {
+			t.Fatalf("CalculateEtag([]) = %q, want %q", got, want)
+		}
+	})
+
+	t.Run("uses newest timestamp and total group count", func(t *testing.T) {
+		newest := time.Date(2024, time.January, 2, 3, 4, 5, 0, time.UTC)
+		older := time.Date(2024, time.January, 1, 12, 0, 0, 0, time.UTC)
+		groups := []SheetGroup{
+			{Title: "older", LastUpdated: older},
+			{Title: "newest", LastUpdated: newest},
+			{Title: "middle", LastUpdated: time.Date(2024, time.January, 1, 20, 0, 0, 0, time.UTC)},
+		}
+
+		want := fmt.Sprintf("%x", sha1.Sum(fmt.Appendf(nil, "%v-%d", newest, len(groups))))
+		if got := CalculateEtag(groups); got != want {
+			t.Fatalf("CalculateEtag(groups) = %q, want %q", got, want)
 		}
 	})
 }

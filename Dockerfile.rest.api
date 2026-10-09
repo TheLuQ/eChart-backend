@@ -1,5 +1,4 @@
 ARG GO_BASE_IMAGE=golang:1.26.1
-ARG NODE_BASE_IMAGE=node:20
 
 FROM $GO_BASE_IMAGE AS builder
 
@@ -25,16 +24,3 @@ USER appuser
 EXPOSE 8080
 
 CMD ["./server"]
-
-FROM $NODE_BASE_IMAGE AS mockapi
-
-WORKDIR /app
-
-COPY .npmrc* /root
-
-RUN npm install -g json-server@0.17.4
-
-COPY ./db.json ./db.json
-RUN echo '{"/api/*": "/$1"}' > ./routes.json
-
-CMD ["json-server", "--watch", "db.json", "--port", "8080", "--routes", "routes.json", "--host", "0.0.0.0"]

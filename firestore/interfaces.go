@@ -3,6 +3,7 @@ package firestore
 type SheetStore interface {
 	GetAllTitles() ([]SheetGroup, error)
 	SearchByGroupKeys(groupKeys []string) ([]Sheet, error)
+	GetEtag() (string, error)
 	AddSheet(sheet *Sheet) error
 	UpsertSheet(sheet *Sheet) error
 	RemoveSheet(sheet *Sheet) error

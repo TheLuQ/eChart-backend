@@ -2,10 +2,12 @@ package router
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/TheLuQ/eChart-backend/firestore"
 )
@@ -19,6 +21,7 @@ func (m *mockSheetStore) SearchByGroupKeys(groupKeys []string) ([]firestore.Shee
 func (m *mockSheetStore) AddSheet(sheet *firestore.Sheet) error    { return nil }
 func (m *mockSheetStore) UpsertSheet(sheet *firestore.Sheet) error { return nil }
 func (m *mockSheetStore) RemoveSheet(sheet *firestore.Sheet) error { return nil }
+func (m *mockSheetStore) GetEtag() (string, error)                 { return "", nil }
 
 type mockEventStore struct {
 	detailsCalls    int
@@ -117,4 +120,30 @@ func TestEventsGetRejectsInvalidLimit(t *testing.T) {
 	if eventsStore.paginationCalls != 0 || eventsStore.detailsCalls != 0 {
 		t.Fatalf("expected no event store calls but got pagination=%d details=%d", eventsStore.paginationCalls, eventsStore.detailsCalls)
 	}
+}
+
+func TestFirestoreSheetGroupToJson(t *testing.T) {
+	t.Run("marshals to expected JSON", func(t *testing.T) {
+		sg := firestore.SheetGroup{
+			Title:       "title",
+			Band:        "band",
+			GroupKey:    "group_key",
+			LastUpdated: time.Date(2024, time.January, 1, 12, 0, 0, 0, time.UTC),
+		}
+		tr := TitleResponse{
+			Title:       sg.Title,
+			Band:        sg.Band,
+			GroupKey:    sg.GroupKey,
+			LastUpdated: sg.LastUpdated,
+		}
+		want := fmt.Sprintf(`{"title":"%s","band":"%s","group_key":"%s","last_updated":"%s"}`,
+			sg.Title, sg.Band, sg.GroupKey, sg.LastUpdated.Format(time.RFC3339))
+		got, err := json.Marshal(tr)
+		if err != nil {
+			t.Fatalf("MarshalJSON() error = %v", err)
+		}
+		if string(got) != want {
+			t.Fatalf("MarshalJSON() = %q, want %q", got, want)
+		}
+	})
 }

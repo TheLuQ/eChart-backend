@@ -1,10 +1,13 @@
 package firestore
 
 import (
+	"crypto/sha1"
+	"fmt"
 	"net/url"
 	"os"
 	"path"
 	"regexp"
+	"slices"
 	"strings"
 	"time"
 
@@ -35,13 +38,24 @@ type Sheet struct {
 }
 
 type SheetGroup struct {
-	ID          string  `firestore:"-" json:"id"`
-	Title       string  `firestore:"title,omitempty" json:"title"`
-	Band        string  `firestore:"band,omitempty" json:"band,omitempty"`
-	GroupKey    string  `firestore:"group_key,omitempty" json:"group_key,omitempty"`
-	LastUpdated string  `firestore:"last_updated" json:"last_updated,omitempty"`
-	ParentPath  string  `firestore:"parent_path,omitempty" json:"parent_path,omitempty"`
-	Sheets      []Sheet `firestore:"sheets" json:"sheets,omitempty"`
+	Title       string    `firestore:"title,omitempty" json:"title"`
+	Band        string    `firestore:"band,omitempty" json:"band,omitempty"`
+	GroupKey    string    `firestore:"group_key,omitempty" json:"group_key,omitempty"`
+	LastUpdated time.Time `firestore:"last_updated" json:"last_updated,omitempty"`
+	ParentPath  string    `firestore:"parent_path,omitempty" json:"parent_path,omitempty"`
+	Sheets      []Sheet   `firestore:"sheets" json:"sheets,omitempty"`
+}
+
+type SheetETag = string
+
+func ToETag(lastUpdated time.Time, collectionSize int64) SheetETag {
+	h := sha1.New()
+	if collectionSize == 0 {
+		return fmt.Sprintf("%x", h.Sum(nil))
+	}
+	hashValue := fmt.Sprintf("%v-%d", lastUpdated, collectionSize)
+	h.Write([]byte(hashValue))
+	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
 type SheetConnector struct {
@@ -57,7 +71,7 @@ func (c *SheetConnector) SearchByGroupKeys(groupKeys []string) ([]Sheet, error) 
 	if err != nil {
 		return nil, err
 	}
-	groups, err := ParseSheetGroupCollection(docs)
+	groups, err := ParseDocuments[SheetGroup](docs)
 	if err != nil {
 		return nil, err
 	}
@@ -69,7 +83,7 @@ func (c *SheetConnector) GetAllTitles() ([]SheetGroup, error) {
 	if err != nil {
 		return nil, err
 	}
-	return ParseSheetGroupCollection(docs)
+	return ParseDocuments[SheetGroup](docs)
 }
 
 func (c *SheetConnector) AddSheet(sheet *Sheet) error {
@@ -82,6 +96,37 @@ func (c *SheetConnector) UpsertSheet(sheet *Sheet) error {
 
 func (c *SheetConnector) RemoveSheet(sheet *Sheet) error {
 	return c.Db.UpdateDocumentWithGroupKey(c.CollectionName, GroupKey(sheet.Band, sheet.Title), RemoveSheetFn(sheet))
+}
+
+func (c *SheetConnector) CountDocuments() (int64, error) {
+	return c.Db.CountDocuments(c.CollectionName)
+}
+
+func (c *SheetConnector) GetLastUpdatedDocument() (*SheetGroup, error) {
+	doc, err := c.Db.SearchSingleDocument(c.CollectionName, LastUpdatedQuery())
+	if err != nil {
+		return nil, err
+	}
+	sg, err := ParseDocument[SheetGroup](doc)
+	if err != nil {
+		return nil, err
+	}
+	return sg, nil
+}
+
+func (c *SheetConnector) GetEtag() (string, error) {
+	doc, err := c.GetLastUpdatedDocument()
+	if err != nil {
+		return "", err
+	}
+	if doc == nil {
+		return "", fmt.Errorf("no documents found")
+	}
+	count, err := c.CountDocuments()
+	if err != nil {
+		return "", err
+	}
+	return ToETag(doc.LastUpdated, count), nil
 }
 
 func (sg *SheetGroup) AddSheetIfMissing(sheet *Sheet) {
@@ -99,14 +144,24 @@ func (sg *SheetGroup) AddSheetIfMissing(sheet *Sheet) {
 
 func GetTitles() DocQuery {
 	return func(cr *firestore.CollectionRef) firestore.Query {
-		return cr.SelectPaths(firestore.FieldPath{firestore.DocumentID}, firestore.FieldPath{"title"}, firestore.FieldPath{"band"}, firestore.FieldPath{"group_key"})
+		return cr.SelectPaths(
+			firestore.FieldPath{"title"},
+			firestore.FieldPath{"band"},
+			firestore.FieldPath{"group_key"},
+			firestore.FieldPath{"last_updated"},
+		)
 	}
 }
 
 func AddSheetFn(sheet *Sheet) DocUpdateFn {
 	return func(transaction *firestore.Transaction, ref *firestore.DocumentRef) error {
-		err := transaction.Set(ref, map[string]interface{}{"sheets": firestore.ArrayUnion(sheet),
-			"title": sheet.Title, "band": sheet.Band, "group_key": GroupKey(sheet.Band, sheet.Title), "last_updated": time.Now().UTC().String()}, firestore.MergeAll)
+		err := transaction.Set(ref, map[string]interface{}{
+			"sheets":       firestore.ArrayUnion(sheet),
+			"title":        sheet.Title,
+			"band":         sheet.Band,
+			"group_key":    GroupKey(sheet.Band, sheet.Title),
+			"last_updated": time.Now().UTC(),
+		}, firestore.MergeAll)
 		return err
 	}
 }
@@ -123,7 +178,7 @@ func UpsertSheetFn(sheet *Sheet) DocUpdateFn {
 		sg.Title = sheet.Title
 		sg.Band = sheet.Band
 		sg.GroupKey = GroupKey(sheet.Band, sheet.Title)
-		sg.LastUpdated = time.Now().UTC().String()
+		sg.LastUpdated = time.Now().UTC()
 		return transaction.Set(ref, sg)
 	}
 }
@@ -151,7 +206,7 @@ func RemoveSheetFn(sheet *Sheet) DocUpdateFn {
 		}
 
 		sg.Sheets = filtered
-		sg.LastUpdated = time.Now().UTC().String()
+		sg.LastUpdated = time.Now().UTC()
 		return transaction.Set(ref, sg)
 	}
 }
@@ -227,7 +282,7 @@ func NewSheetGroup(title string, sheet Sheet) *SheetGroup {
 		Title:       title,
 		Band:        sheet.Band,
 		GroupKey:    GroupKey(sheet.Band, title),
-		LastUpdated: time.Now().UTC().String(),
+		LastUpdated: time.Now().UTC(),
 		Sheets:      []Sheet{sheet},
 	}
 }
@@ -254,31 +309,20 @@ func normalizeGroupPart(value string) string {
 	return strings.Trim(slug, "-")
 }
 
-func ParseSheetGroup(doc *firestore.DocumentSnapshot) (*SheetGroup, error) {
-	var sg SheetGroup
-	if err := doc.DataTo(&sg); err != nil {
-		return nil, err
-	}
-	sg.ID = doc.Ref.ID
-	return &sg, nil
-}
-
-func ParseSheetGroupCollection(docs []*firestore.DocumentSnapshot) ([]SheetGroup, error) {
-	var groups []SheetGroup
-	for _, doc := range docs {
-		sg, err := ParseSheetGroup(doc)
-		if err != nil {
-			return nil, err
-		}
-		groups = append(groups, *sg)
-	}
-	return groups, nil
-}
-
 func FlattenSheets(sheetGroups []SheetGroup) []Sheet {
 	result := make([]Sheet, 0)
 	for _, group := range sheetGroups {
 		result = append(result, group.GetSheets()...)
 	}
 	return result
+}
+
+func CalculateEtag(sheetGroups []SheetGroup) string {
+	if len(sheetGroups) == 0 {
+		return ToETag(time.Time{}, 0)
+	}
+	lastUpdatedElement := slices.MaxFunc(sheetGroups, func(a SheetGroup, b SheetGroup) int {
+		return a.LastUpdated.Compare(b.LastUpdated)
+	})
+	return ToETag(lastUpdatedElement.LastUpdated, int64(len(sheetGroups)))
 }

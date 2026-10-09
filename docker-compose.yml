@@ -46,12 +46,13 @@ services:
       dockerfile: Dockerfile.rest.api
       args:
         - GO_BASE_IMAGE=${GO_BASE_IMAGE}
-        - NODE_BASE_IMAGE=${NODE_BASE_IMAGE}
         - GOPROXY=${GOPROXY}
       target: ${REST_API_TARGET-production}
     env_file:
       - .env
       - .env.gcf
+    ports:
+      - 127.0.0.1::8080
     networks:
       echart-backend_devcontainer_default:
         aliases:
